@@ -1,0 +1,1 @@
+docker run -d -p 27018:27017 -v grand-node-db:/data/db sha256:2e49cfa146c9446e77f66f33ae8f096fe1c91503501012ec2ad65ee7d3884896
