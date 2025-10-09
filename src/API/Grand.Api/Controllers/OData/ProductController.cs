@@ -53,7 +53,8 @@ public class ProductController : BaseODataController
     {
         if (!await _permissionService.Authorize(PermissionSystemName.Products)) return Forbid();
 
-        return Ok(await _mediator.Send(new GetGenericQuery<ProductDto, Product>()));
+        var result = await _mediator.Send(new GetGenericQuery<ProductDto, Product>());
+        return Ok();
     }
 
     [SwaggerOperation("Add new entity to Product", OperationId = "InsertProduct")]
@@ -76,7 +77,8 @@ public class ProductController : BaseODataController
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> Put([FromBody] ProductDto model)
     {
-        if (!await _permissionService.Authorize(PermissionSystemName.Products)) return Forbid();
+        if (!await _permissionService.Authorize(PermissionSystemName.Products)) 
+            return Forbid();
 
         await _mediator.Send(new UpdateProductCommand { Model = model });
         return Ok();

@@ -52,7 +52,6 @@ public class CategoryController : BaseODataController
     public async Task<IActionResult> Get()
     {
         if (!await _permissionService.Authorize(PermissionSystemName.Categories)) return Forbid();
-
         return Ok(await _mediator.Send(new GetGenericQuery<CategoryDto, Category>()));
     }
 

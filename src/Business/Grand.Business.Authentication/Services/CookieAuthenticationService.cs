@@ -110,6 +110,7 @@ public class CookieAuthenticationService : IGrandAuthenticationService
         //sign in user
         if (_httpContextAccessor.HttpContext != null)
         {
+     
             _httpContextAccessor.HttpContext.Response.Cookies.Delete(CustomerCookieName);
 
             await _httpContextAccessor.HttpContext.SignInAsync(
