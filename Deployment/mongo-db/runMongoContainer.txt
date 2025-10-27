@@ -1,1 +1,29 @@
-docker run -d -p 27018:27017 -v grand-node-db:/data/db sha256:2e49cfa146c9446e77f66f33ae8f096fe1c91503501012ec2ad65ee7d3884896
+docker run -d --name grandnode-mongodb -p 27018:27017 -v grand-node-db:/data/db sha256:2e49cfa146c9446e77f66f33ae8f096fe1c91503501012ec2ad65ee7d3884896
+
+2-я итерация
+1. Создаем volume
+docker volume create grand-node-db2
+2. Запускаем контейнер с новым volume
+docker run -d --name grandnode-mongodb -p 27018:27017 -v grand-node-db2:/data/db grandnodemongodb2
+docker run создает новый контейнер, для того, чтобы запустить существующий нужно сделать docker start grandnode-mongodb
+docker run -d --name grandnode-mongodb -p 27018:27017 -v grand-node-db2:/data/db grandnodemongodb2
+
+
+3-я итерация
+1. Создаем volume
+docker volume create grand-node-db3
+2. Билдим имедж с новым volume
+делаем cd Deployment/mongo-db чтобы попасть в папку с докерфайлом
+docker build -f mongodb.Dockerfile -t grandnodemongodb3 .
+3. Раним контейнер
+docker run -d --name grandnode-mongodb3 -p 27019:27017 -v grand-node-db3:/data/db grandnodemongodb3
+docker run создает новый контейнер, для того, чтобы запустить существующий нужно сделать 
+docker start grandnode-mongodb3
+
+Settings.cfg должны хранится в C:\Work\Repositories\grand-node-fork\grandnode2\src\Web\Grand.Web\App_Data
+
+Разбираем коннекшн стринг на части для того, чтобы потом засетить в админке гранд нода.
+MongoDb Server Name: localhost:27018
+Database Name: grandnodedb2
+MongoDB Server UserName: root
+MongoDB Server Password: example
