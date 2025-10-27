@@ -54,7 +54,7 @@ public class ProductController : BaseODataController
         if (!await _permissionService.Authorize(PermissionSystemName.Products)) return Forbid();
 
         var result = await _mediator.Send(new GetGenericQuery<ProductDto, Product>());
-        return Ok();
+        return Ok(result);
     }
 
     [SwaggerOperation("Add new entity to Product", OperationId = "InsertProduct")]
