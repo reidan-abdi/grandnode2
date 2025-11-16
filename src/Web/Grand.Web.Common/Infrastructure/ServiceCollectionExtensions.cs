@@ -151,8 +151,7 @@ public static class ServiceCollectionExtensions
         //add main cookie authentication
         authenticationBuilder.AddCookie(GrandCookieAuthenticationDefaults.AuthenticationScheme, options =>
         {
-            options.Cookie.Name =
-                securityConfig.CookiePrefix + GrandCookieAuthenticationDefaults.AuthenticationScheme;
+            options.Cookie.Name = securityConfig.CookiePrefix + GrandCookieAuthenticationDefaults.AuthenticationScheme;
             options.Cookie.HttpOnly = true;
             options.LoginPath = GrandCookieAuthenticationDefaults.LoginPath;
             options.AccessDeniedPath = GrandCookieAuthenticationDefaults.AccessDeniedPath;

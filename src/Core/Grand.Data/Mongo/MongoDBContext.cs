@@ -82,8 +82,7 @@ public class MongoDBContext : IDatabaseContext
         await _database.DropCollectionAsync(name);
     }
 
-    public async Task CreateIndex<T>(IRepository<T> repository, OrderBuilder<T> orderBuilder, string indexName,
-        bool unique = false) where T : BaseEntity
+    public async Task CreateIndex<T>(IRepository<T> repository, OrderBuilder<T> orderBuilder, string indexName, bool unique = false) where T : BaseEntity
     {
         if (string.IsNullOrEmpty(indexName))
             throw new ArgumentNullException(nameof(indexName));

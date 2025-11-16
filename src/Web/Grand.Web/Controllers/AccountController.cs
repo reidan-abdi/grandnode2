@@ -293,8 +293,7 @@ public class AccountController : BasePublicController
     }
 
     [IgnoreApi]
-    private async Task<IActionResult> SignInAction(Customer customer, bool createPersistentCookie = false,
-        string returnUrl = null)
+    private async Task<IActionResult> SignInAction(Customer customer, bool createPersistentCookie = false, string returnUrl = null)
     {
         //raise event       
         await _mediator.Publish(new CustomerLoggedInEvent(customer));

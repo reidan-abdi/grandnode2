@@ -111,6 +111,7 @@ public class CookieAuthenticationService : IGrandAuthenticationService
         if (_httpContextAccessor.HttpContext != null)
         {
      
+            // Drop the guest cookie
             _httpContextAccessor.HttpContext.Response.Cookies.Delete(CustomerCookieName);
 
             await _httpContextAccessor.HttpContext.SignInAsync(
