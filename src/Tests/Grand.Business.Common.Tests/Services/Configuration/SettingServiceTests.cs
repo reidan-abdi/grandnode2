@@ -10,14 +10,14 @@ namespace Grand.Business.Common.Tests.Services.Configuration;
 [TestClass]
 public class SettingServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IRepository<Setting>> _repositoryMock;
     private SettingService _service;
 
     [TestInitialize]
     public void Init()
     {
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _repositoryMock = new Mock<IRepository<Setting>>();
         _service = new SettingService(_cacheMock.Object, _repositoryMock.Object);
     }

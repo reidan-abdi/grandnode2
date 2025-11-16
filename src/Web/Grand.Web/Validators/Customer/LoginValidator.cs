@@ -45,7 +45,7 @@ public class LoginValidator : BaseGrandValidator<LoginModel>
         RuleFor(x => x).CustomAsync(async (x, context, _) =>
         {
             var customer = customerSettings.UsernamesEnabled
-                ? await customerService.GetCustomerByUsername(x.Username)
+                ? await customerService.GetCustomerByName(x.Username)
                 : await customerService.GetCustomerByEmail(x.Email);
 
             switch (customer)

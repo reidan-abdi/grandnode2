@@ -122,7 +122,7 @@ public interface ICustomerService
     /// </summary>
     /// <param name="username">Username</param>
     /// <returns>Customer</returns>
-    Task<Customer> GetCustomerByUsername(string username);
+    Task<Customer> GetCustomerByName(string username);
 
     /// <summary>
     ///     Insert a guest customer

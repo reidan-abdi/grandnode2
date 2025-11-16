@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Grand.Infrastructure.Caching.RabbitMq;
 
-public class RabbitMqMessageCacheManager : MemoryCacheBase, ICacheBase
+public class RabbitMqMessageCacheManager : MemoryCache, ICache
 {
     public static readonly string ManageClientId = Guid.NewGuid().ToString("N");
     private readonly IBus _bus;

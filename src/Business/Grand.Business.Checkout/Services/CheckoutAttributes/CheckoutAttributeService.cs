@@ -22,12 +22,12 @@ public class CheckoutAttributeService : ICheckoutAttributeService
     ///     Ctor
     /// </summary>
     public CheckoutAttributeService(
-        ICacheBase cacheBase,
+        ICache cache,
         IRepository<CheckoutAttribute> checkoutAttributeRepository,
         IMediator mediator,
         IWorkContext workContext, AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _checkoutAttributeRepository = checkoutAttributeRepository;
         _mediator = mediator;
         _workContext = workContext;
@@ -40,7 +40,7 @@ public class CheckoutAttributeService : ICheckoutAttributeService
 
     private readonly IRepository<CheckoutAttribute> _checkoutAttributeRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IWorkContext _workContext;
     private readonly AccessControlConfig _accessControlConfig;
 
@@ -59,7 +59,7 @@ public class CheckoutAttributeService : ICheckoutAttributeService
         bool excludeShippableAttributes = false, bool ignoreAcl = false)
     {
         var key = string.Format(CacheKey.CHECKOUTATTRIBUTES_ALL_KEY, storeId, excludeShippableAttributes, ignoreAcl);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _checkoutAttributeRepository.Table
                 select p;
@@ -97,7 +97,7 @@ public class CheckoutAttributeService : ICheckoutAttributeService
     public virtual Task<CheckoutAttribute> GetCheckoutAttributeById(string checkoutAttributeId)
     {
         var key = string.Format(CacheKey.CHECKOUTATTRIBUTES_BY_ID_KEY, checkoutAttributeId);
-        return _cacheBase.GetAsync(key, () => _checkoutAttributeRepository.GetByIdAsync(checkoutAttributeId));
+        return _cache.GetAsync(key, () => _checkoutAttributeRepository.GetByIdAsync(checkoutAttributeId));
     }
 
     /// <summary>
@@ -110,8 +110,8 @@ public class CheckoutAttributeService : ICheckoutAttributeService
 
         await _checkoutAttributeRepository.InsertAsync(checkoutAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(checkoutAttribute);
@@ -127,8 +127,8 @@ public class CheckoutAttributeService : ICheckoutAttributeService
 
         await _checkoutAttributeRepository.UpdateAsync(checkoutAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(checkoutAttribute);
@@ -144,8 +144,8 @@ public class CheckoutAttributeService : ICheckoutAttributeService
 
         await _checkoutAttributeRepository.DeleteAsync(checkoutAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(checkoutAttribute);

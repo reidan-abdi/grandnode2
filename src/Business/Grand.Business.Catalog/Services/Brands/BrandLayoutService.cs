@@ -19,14 +19,14 @@ public class BrandLayoutService : IBrandLayoutService
     ///     Ctor
     /// </summary>
     /// <param name="brandLayoutRepository">Brand layout repository</param>
-    /// <param name="cacheBase">Cache base</param>
+    /// <param name="cache">Cache base</param>
     /// <param name="mediator">Mediator</param>
     public BrandLayoutService(IRepository<BrandLayout> brandLayoutRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _brandLayoutRepository = brandLayoutRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -35,7 +35,7 @@ public class BrandLayoutService : IBrandLayoutService
     #region Fields
 
     private readonly IRepository<BrandLayout> _brandLayoutRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -48,7 +48,7 @@ public class BrandLayoutService : IBrandLayoutService
     /// <returns>Brand layouts</returns>
     public virtual async Task<IList<BrandLayout>> GetAllBrandLayouts()
     {
-        return await _cacheBase.GetAsync(CacheKey.BRAND_LAYOUT_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.BRAND_LAYOUT_ALL, async () =>
         {
             var query = from pt in _brandLayoutRepository.Table
                 orderby pt.DisplayOrder
@@ -65,7 +65,7 @@ public class BrandLayoutService : IBrandLayoutService
     public virtual Task<BrandLayout> GetBrandLayoutById(string brandLayoutId)
     {
         var key = string.Format(CacheKey.BRAND_LAYOUT_BY_ID_KEY, brandLayoutId);
-        return _cacheBase.GetAsync(key, () => _brandLayoutRepository.GetByIdAsync(brandLayoutId));
+        return _cache.GetAsync(key, () => _brandLayoutRepository.GetByIdAsync(brandLayoutId));
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class BrandLayoutService : IBrandLayoutService
         await _brandLayoutRepository.InsertAsync(brandLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.BRAND_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.BRAND_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(brandLayout);
@@ -96,7 +96,7 @@ public class BrandLayoutService : IBrandLayoutService
         await _brandLayoutRepository.UpdateAsync(brandLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.BRAND_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.BRAND_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(brandLayout);
@@ -113,7 +113,7 @@ public class BrandLayoutService : IBrandLayoutService
         await _brandLayoutRepository.DeleteAsync(brandLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.BRAND_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.BRAND_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(brandLayout);

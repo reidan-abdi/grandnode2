@@ -12,15 +12,15 @@ namespace Grand.Web.Features.Handlers.Catalog;
 
 public class GetCollectionNavigationHandler : IRequestHandler<GetCollectionNavigation, CollectionNavigationModel>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CatalogSettings _catalogSettings;
     private readonly ICollectionService _collectionService;
 
-    public GetCollectionNavigationHandler(ICacheBase cacheBase,
+    public GetCollectionNavigationHandler(ICache cache,
         ICollectionService collectionService,
         CatalogSettings catalogSettings)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _collectionService = collectionService;
         _catalogSettings = catalogSettings;
     }
@@ -31,7 +31,7 @@ public class GetCollectionNavigationHandler : IRequestHandler<GetCollectionNavig
         var cacheKey = string.Format(CacheKeyConst.COLLECTION_NAVIGATION_MODEL_KEY,
             request.CurrentCollectionId, request.Language.Id, string.Join(",", request.Customer.GetCustomerGroupIds()),
             request.Store.Id);
-        var cacheModel = await _cacheBase.GetAsync(cacheKey, async () =>
+        var cacheModel = await _cache.GetAsync(cacheKey, async () =>
         {
             var currentCollection = await _collectionService.GetCollectionById(request.CurrentCollectionId);
             var collections =

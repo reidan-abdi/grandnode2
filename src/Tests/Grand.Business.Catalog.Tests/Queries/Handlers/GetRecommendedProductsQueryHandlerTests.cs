@@ -13,7 +13,7 @@ namespace Grand.Business.Catalog.Tests.Queries.Handlers;
 [TestClass]
 public class GetRecommendedProductsQueryHandlerTests
 {
-    private Mock<ICacheBase> _casheManagerMock;
+    private Mock<ICache> _casheManagerMock;
     private Mock<IRepository<CustomerGroupProduct>> _customerGroupProductRepositoryMock;
     private Mock<IProductService> _productServiceMock;
 
@@ -22,7 +22,7 @@ public class GetRecommendedProductsQueryHandlerTests
     [TestInitialize]
     public void Init()
     {
-        _casheManagerMock = new Mock<ICacheBase>();
+        _casheManagerMock = new Mock<ICache>();
         _productServiceMock = new Mock<IProductService>();
         _customerGroupProductRepositoryMock = new Mock<IRepository<CustomerGroupProduct>>();
 

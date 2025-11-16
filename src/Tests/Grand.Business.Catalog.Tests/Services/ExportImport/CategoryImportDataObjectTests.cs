@@ -30,7 +30,7 @@ namespace Grand.Business.Catalog.Tests.Services.ExportImport;
 [TestClass]
 public class CategoryImportDataObjectTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private CategoryImportDataObject _categoryImportDataObject;
     private Mock<ICategoryLayoutService> _categoryLayoutServiceMock;
     private ICategoryService _categoryService;
@@ -59,9 +59,9 @@ public class CategoryImportDataObjectTests
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
 
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _categoryService = new CategoryService(_cacheBase, _repository, _workContextMock.Object, _mediatorMock.Object,
+        _categoryService = new CategoryService(_cache, _repository, _workContextMock.Object, _mediatorMock.Object,
             new AclService(new AccessControlConfig()), new AccessControlConfig());
         _seNameService = new SeNameService(_slugServiceMock.Object, _languageServiceMock.Object, new SeoSettings());
         _categoryImportDataObject = new CategoryImportDataObject(_categoryService, _pictureServiceMock.Object,

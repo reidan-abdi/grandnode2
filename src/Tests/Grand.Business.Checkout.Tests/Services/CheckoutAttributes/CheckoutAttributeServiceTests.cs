@@ -15,7 +15,7 @@ namespace Grand.Business.Checkout.Tests.Services.CheckoutAttributes;
 [TestClass]
 public class CheckoutAttributeServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<CheckoutAttribute>> _repositoryMock;
     private ICheckoutAttributeService _service;
@@ -24,7 +24,7 @@ public class CheckoutAttributeServiceTests
     [TestInitialize]
     public void Init()
     {
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _repositoryMock = new Mock<IRepository<CheckoutAttribute>>();
         _mediatorMock = new Mock<IMediator>();
         _workContextMock = new Mock<IWorkContext>();

@@ -19,7 +19,7 @@ namespace Grand.Business.Catalog.Tests.Services.Brands;
 public class BrandServiceTests
 {
     private BrandService _brandService;
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private IRepository<Brand> _repository;
     private Mock<IWorkContext> _workContextMock;
@@ -32,9 +32,9 @@ public class BrandServiceTests
         _workContextMock.Setup(c => c.CurrentStore).Returns(() => new Store { Id = "" });
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _brandService = new BrandService(_cacheBase, _repository, _workContextMock.Object, _mediatorMock.Object,
+        _brandService = new BrandService(_cache, _repository, _workContextMock.Object, _mediatorMock.Object,
             new AccessControlConfig());
     }
 

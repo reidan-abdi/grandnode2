@@ -13,7 +13,7 @@ namespace Grand.Business.Common.Tests.Services.Security;
 [TestClass]
 public class PermissionServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IGroupService> _groupServiceMock;
     private Mock<IRepository<PermissionAction>> _permissionActionRepositoryMock;
     private Mock<IRepository<Permission>> _permissionRepositoryMock;
@@ -27,7 +27,7 @@ public class PermissionServiceTests
         _permissionActionRepositoryMock = new Mock<IRepository<PermissionAction>>();
         _workContextMock = new Mock<IWorkContext>();
         _groupServiceMock = new Mock<IGroupService>();
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _service = new PermissionService(_permissionRepositoryMock.Object, _permissionActionRepositoryMock.Object,
             _workContextMock.Object,
             _groupServiceMock.Object, _cacheMock.Object);

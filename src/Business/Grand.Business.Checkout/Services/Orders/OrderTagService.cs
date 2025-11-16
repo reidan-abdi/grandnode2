@@ -14,14 +14,14 @@ public class OrderTagService : IOrderTagService
 
     public OrderTagService(IRepository<OrderTag> orderTagRepository,
         IRepository<Order> orderRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator
     )
     {
         _orderTagRepository = orderTagRepository;
         _orderRepository = orderRepository;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -36,7 +36,7 @@ public class OrderTagService : IOrderTagService
     private async Task<Dictionary<string, int>> GetOrderCount(string orderTagId)
     {
         var key = string.Format(CacheKey.ORDERTAG_COUNT_KEY, orderTagId);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from ot in _orderTagRepository.Table
                 select ot;
@@ -52,7 +52,7 @@ public class OrderTagService : IOrderTagService
 
     private readonly IRepository<OrderTag> _orderTagRepository;
     private readonly IRepository<Order> _orderRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -99,7 +99,7 @@ public class OrderTagService : IOrderTagService
         await _orderTagRepository.InsertAsync(orderTag);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ORDERTAG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ORDERTAG_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(orderTag);
@@ -116,7 +116,7 @@ public class OrderTagService : IOrderTagService
         await _orderTagRepository.UpdateAsync(orderTag);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ORDERTAG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ORDERTAG_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(orderTag);
@@ -137,8 +137,8 @@ public class OrderTagService : IOrderTagService
         await _orderTagRepository.DeleteAsync(orderTag);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ORDERTAG_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.ORDERS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ORDERTAG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ORDERS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(orderTag);
@@ -159,8 +159,8 @@ public class OrderTagService : IOrderTagService
         await _orderTagRepository.UpdateField(orderTagId, x => x.Count, orderTag.Count + 1);
 
         //cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.ORDERS_BY_ID_KEY, orderId));
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.ORDERTAG_COUNT_KEY, orderTagId));
+        await _cache.RemoveAsync(string.Format(CacheKey.ORDERS_BY_ID_KEY, orderId));
+        await _cache.RemoveAsync(string.Format(CacheKey.ORDERTAG_COUNT_KEY, orderTagId));
 
         //event notification
         await _mediator.EntityUpdated(orderTag);
@@ -180,8 +180,8 @@ public class OrderTagService : IOrderTagService
         await _orderTagRepository.UpdateField(orderTagId, x => x.Count, orderTag.Count - 1);
 
         //cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.ORDERS_BY_ID_KEY, orderId));
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.ORDERTAG_COUNT_KEY, orderTagId));
+        await _cache.RemoveAsync(string.Format(CacheKey.ORDERS_BY_ID_KEY, orderId));
+        await _cache.RemoveAsync(string.Format(CacheKey.ORDERTAG_COUNT_KEY, orderTagId));
     }
 
     /// <summary>

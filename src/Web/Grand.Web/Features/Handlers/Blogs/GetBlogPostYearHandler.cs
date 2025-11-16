@@ -12,14 +12,14 @@ namespace Grand.Web.Features.Handlers.Blogs;
 public class GetBlogPostYearHandler : IRequestHandler<GetBlogPostYear, IList<BlogPostYearModel>>
 {
     private readonly IBlogService _blogService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IWorkContext _workContext;
 
-    public GetBlogPostYearHandler(IBlogService blogService, ICacheBase cacheBase,
+    public GetBlogPostYearHandler(IBlogService blogService, ICache cache,
         IWorkContext workContext)
     {
         _blogService = blogService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _workContext = workContext;
     }
 
@@ -27,7 +27,7 @@ public class GetBlogPostYearHandler : IRequestHandler<GetBlogPostYear, IList<Blo
     {
         var cacheKey = string.Format(CacheKeyConst.BLOG_MONTHS_MODEL_KEY, _workContext.WorkingLanguage.Id,
             _workContext.CurrentStore.Id);
-        var cachedModel = await _cacheBase.GetAsync(cacheKey, async () =>
+        var cachedModel = await _cache.GetAsync(cacheKey, async () =>
         {
             var model = new List<BlogPostYearModel>();
 

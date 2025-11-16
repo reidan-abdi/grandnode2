@@ -18,7 +18,7 @@ public class DiscountDeletedEventHandler : INotificationHandler<EntityDeleted<Di
         IRepository<Collection> collectionRepository,
         IRepository<Vendor> vendorRepository,
         IRepository<DiscountCoupon> discountCouponRepository,
-        ICacheBase cacheBase
+        ICache cache
     )
     {
         _productRepository = productRepository;
@@ -28,7 +28,7 @@ public class DiscountDeletedEventHandler : INotificationHandler<EntityDeleted<Di
         _vendorRepository = vendorRepository;
         _vendorRepository = vendorRepository;
         _discountCouponRepository = discountCouponRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public async Task Handle(EntityDeleted<Discount> notification, CancellationToken cancellationToken)
@@ -41,31 +41,31 @@ public class DiscountDeletedEventHandler : INotificationHandler<EntityDeleted<Di
                 //delete on the product
                 await _productRepository.Pull(string.Empty, x => x.AppliedDiscounts, discount.Id);
 
-                await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+                await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
                 break;
             case DiscountType.AssignedToCategories:
                 //delete on the category
                 await _categoryRepository.Pull(string.Empty, x => x.AppliedDiscounts, discount.Id);
                 //clear cache
-                await _cacheBase.RemoveByPrefix(CacheKey.CATEGORIES_PATTERN_KEY);
+                await _cache.RemoveByPrefix(CacheKey.CATEGORIES_PATTERN_KEY);
                 break;
             case DiscountType.AssignedToBrands:
                 //delete on the brand
                 await _brandRepository.Pull(string.Empty, x => x.AppliedDiscounts, discount.Id);
                 //clear cache
-                await _cacheBase.RemoveByPrefix(CacheKey.BRANDS_PATTERN_KEY);
+                await _cache.RemoveByPrefix(CacheKey.BRANDS_PATTERN_KEY);
                 break;
             case DiscountType.AssignedToCollections:
                 //delete on the collection
                 await _collectionRepository.Pull(string.Empty, x => x.AppliedDiscounts, discount.Id);
                 //clear cache
-                await _cacheBase.RemoveByPrefix(CacheKey.COLLECTIONS_PATTERN_KEY);
+                await _cache.RemoveByPrefix(CacheKey.COLLECTIONS_PATTERN_KEY);
                 break;
             case DiscountType.AssignedToVendors:
                 //delete on the vendor
                 await _vendorRepository.Pull(string.Empty, x => x.AppliedDiscounts, discount.Id);
                 //clear cache
-                await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+                await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
                 break;
             case DiscountType.AssignedToOrderTotal:
                 break;
@@ -89,7 +89,7 @@ public class DiscountDeletedEventHandler : INotificationHandler<EntityDeleted<Di
     private readonly IRepository<Collection> _collectionRepository;
     private readonly IRepository<Vendor> _vendorRepository;
     private readonly IRepository<DiscountCoupon> _discountCouponRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 }

@@ -32,7 +32,7 @@ public class CurrencyController : BaseAdminController
         IDateTimeService dateTimeService,
         ITranslationService translationService,
         ILanguageService languageService,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _currencyService = currencyService;
         _exchangeRateService = exchangeRateService;
@@ -42,7 +42,7 @@ public class CurrencyController : BaseAdminController
         _dateTimeService = dateTimeService;
         _translationService = translationService;
         _languageService = languageService;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -57,7 +57,7 @@ public class CurrencyController : BaseAdminController
     private readonly IDateTimeService _dateTimeService;
     private readonly ITranslationService _translationService;
     private readonly ILanguageService _languageService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -65,7 +65,7 @@ public class CurrencyController : BaseAdminController
 
     protected async Task ClearCache()
     {
-        await _cacheBase.Clear();
+        await _cache.Clear();
     }
 
     public IActionResult Index()

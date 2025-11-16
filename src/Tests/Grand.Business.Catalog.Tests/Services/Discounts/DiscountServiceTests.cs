@@ -26,7 +26,7 @@ namespace Grand.Business.Catalog.Tests.Services.Discounts;
 [TestClass]
 public class DiscountServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private DiscountService _dicountService;
     private IEnumerable<IDiscountAmountProvider> _discountAmountProviders;
     private IRepository<DiscountCoupon> _discountCouponRepository;
@@ -52,7 +52,7 @@ public class DiscountServiceTests
         _workContextMock.Setup(c => c.CurrentStore).Returns(() => new Store { Id = "" });
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
         _discountProviders = new List<IDiscountProvider> { new DiscountProviderTest() };
@@ -60,7 +60,7 @@ public class DiscountServiceTests
         _discountProviderLoader = new DiscountProviderLoader(_discountProviders, _discountAmountProviders);
         _discountValidationService =
             new DiscountValidationService(_discountProviderLoader, _discountCouponRepository, _mediatorMock.Object);
-        _dicountService = new DiscountService(_cacheBase, _repository, _discountCouponRepository,
+        _dicountService = new DiscountService(_cache, _repository, _discountCouponRepository,
             _discountUsageHistoryRepository, _mediatorMock.Object, new AccessControlConfig());
         handler = new GetDiscountUsageHistoryQueryHandler(_discountUsageHistoryRepository);
         _getDiscountAmountProviderHandler = new GetDiscountAmountProviderHandler(_discountProviderLoader);

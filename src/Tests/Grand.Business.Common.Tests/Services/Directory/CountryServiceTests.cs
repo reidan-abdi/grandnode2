@@ -14,7 +14,7 @@ namespace Grand.Business.Common.Tests.Services.Directory;
 [TestClass]
 public class CountryServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
 
     private CountryService _countryService;
     private Mock<IMediator> _mediatorMock;
@@ -26,9 +26,9 @@ public class CountryServiceTests
         _repository = new MongoDBRepositoryTest<Country>();
 
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _countryService = new CountryService(_repository, _mediatorMock.Object, _cacheBase, new AccessControlConfig());
+        _countryService = new CountryService(_repository, _mediatorMock.Object, _cache, new AccessControlConfig());
     }
 
     [TestMethod]

@@ -140,7 +140,7 @@ public class CustomerInfoValidator : BaseGrandValidator<CustomerInfoModel>
                 if (x.Username.ToLower().Length > 100)
                     context.AddFailure(translationService.GetResource("Account.EmailUsernameErrors.UsernameTooLong"));
 
-                var customer2 = await customerService.GetCustomerByUsername(x.Username.ToLower());
+                var customer2 = await customerService.GetCustomerByName(x.Username.ToLower());
                 if (customer2 != null)
                     context.AddFailure(
                         translationService.GetResource("Account.EmailUsernameErrors.UsernameAlreadyExists"));

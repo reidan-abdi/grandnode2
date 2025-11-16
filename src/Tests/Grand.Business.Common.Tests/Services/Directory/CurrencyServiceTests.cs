@@ -18,7 +18,7 @@ namespace Grand.Business.Common.Tests.Services.Directory;
 public class CurrencyServiceTests
 {
     private Mock<IAclService> _aclService;
-    private Mock<ICacheBase> _cacheManager;
+    private Mock<ICache> _cacheManager;
     private IRepository<Currency> _currencyRepository;
     private ICurrencyService _currencyService;
     private CurrencySettings _currencySettings;
@@ -85,7 +85,7 @@ public class CurrencyServiceTests
             _eventPublisher = tempEventPublisher.Object;
         }
 
-        _cacheManager = new Mock<ICacheBase>();
+        _cacheManager = new Mock<ICache>();
         _aclService = new Mock<IAclService>();
         _serviceProvider = new Mock<IServiceProvider>().Object;
 

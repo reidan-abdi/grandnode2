@@ -18,7 +18,7 @@ namespace Grand.Business.Catalog.Tests.Services.Collections;
 [TestClass]
 public class ProductCollectionServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private ProductCollectionService _productCollectionService;
     private IRepository<Product> _repository;
@@ -32,9 +32,9 @@ public class ProductCollectionServiceTests
         _workContextMock.Setup(c => c.CurrentStore).Returns(() => new Store { Id = "" });
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _productCollectionService = new ProductCollectionService(_cacheBase, _repository, _workContextMock.Object,
+        _productCollectionService = new ProductCollectionService(_cache, _repository, _workContextMock.Object,
             _mediatorMock.Object, new AccessControlConfig());
     }
 

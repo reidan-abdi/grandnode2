@@ -14,7 +14,7 @@ namespace Grand.Business.Checkout.Tests.Services.Orders;
 [TestClass]
 public class OrderTagServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private IRepository<Order> _orderRepository;
     private IRepository<OrderTag> _orderTagRepository;
@@ -28,10 +28,10 @@ public class OrderTagServiceTests
 
         _mediatorMock = new Mock<IMediator>();
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
-        _service = new OrderTagService(_orderTagRepository, _orderRepository, _cacheBase, _mediatorMock.Object);
+        _service = new OrderTagService(_orderTagRepository, _orderRepository, _cache, _mediatorMock.Object);
     }
 
     [TestMethod]

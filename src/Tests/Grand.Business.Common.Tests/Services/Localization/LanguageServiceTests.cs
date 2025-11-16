@@ -14,7 +14,7 @@ namespace Grand.Business.Common.Tests.Services.Localization;
 [TestClass]
 public class LanguageServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
 
     private LanguageService _languageService;
     private Mock<IMediator> _mediatorMock;
@@ -26,9 +26,9 @@ public class LanguageServiceTests
         _repository = new MongoDBRepositoryTest<Language>();
 
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _languageService = new LanguageService(_cacheBase, _repository, _mediatorMock.Object);
+        _languageService = new LanguageService(_cache, _repository, _mediatorMock.Object);
     }
 
     [TestMethod]

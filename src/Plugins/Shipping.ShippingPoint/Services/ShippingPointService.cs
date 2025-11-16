@@ -18,12 +18,12 @@ public class ShippingPointService : IShippingPointService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache base</param>
+    /// <param name="cache">Cache base</param>
     /// <param name="ShippingPointRepository">Store pickup point repository</param>
-    public ShippingPointService(ICacheBase cacheBase,
+    public ShippingPointService(ICache cache,
         IRepository<ShippingPoints> ShippingPointRepository)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _shippingPointRepository = ShippingPointRepository;
     }
 
@@ -31,7 +31,7 @@ public class ShippingPointService : IShippingPointService
 
     #region Fields
 
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<ShippingPoints> _shippingPointRepository;
 
     #endregion
@@ -88,7 +88,7 @@ public class ShippingPointService : IShippingPointService
         ArgumentNullException.ThrowIfNull(pickupPoint);
 
         await _shippingPointRepository.InsertAsync(pickupPoint);
-        await _cacheBase.RemoveByPrefix(PICKUP_POINT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(PICKUP_POINT_PATTERN_KEY);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public class ShippingPointService : IShippingPointService
         ArgumentNullException.ThrowIfNull(pickupPoint);
 
         await _shippingPointRepository.UpdateAsync(pickupPoint);
-        await _cacheBase.RemoveByPrefix(PICKUP_POINT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(PICKUP_POINT_PATTERN_KEY);
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public class ShippingPointService : IShippingPointService
         ArgumentNullException.ThrowIfNull(pickupPoint);
 
         await _shippingPointRepository.DeleteAsync(pickupPoint);
-        await _cacheBase.RemoveByPrefix(PICKUP_POINT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(PICKUP_POINT_PATTERN_KEY);
     }
 
     #endregion

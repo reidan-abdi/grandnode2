@@ -23,13 +23,13 @@ public class PageService : IPageService
         IWorkContext workContext,
         IAclService aclService,
         IMediator mediator,
-        ICacheBase cacheBase, AccessControlConfig accessControlConfig)
+        ICache cache, AccessControlConfig accessControlConfig)
     {
         _pageRepository = pageRepository;
         _workContext = workContext;
         _aclService = aclService;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _accessControlConfig = accessControlConfig;
     }
 
@@ -41,7 +41,7 @@ public class PageService : IPageService
     private readonly IWorkContext _workContext;
     private readonly IAclService _aclService;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly AccessControlConfig _accessControlConfig;
 
     #endregion
@@ -56,7 +56,7 @@ public class PageService : IPageService
     public virtual Task<Page> GetPageById(string pageId)
     {
         var key = string.Format(CacheKey.PAGES_BY_ID_KEY, pageId);
-        return _cacheBase.GetAsync(key, () => _pageRepository.GetByIdAsync(pageId));
+        return _cache.GetAsync(key, () => _pageRepository.GetByIdAsync(pageId));
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public class PageService : IPageService
             return null;
 
         var key = string.Format(CacheKey.PAGES_BY_SYSTEMNAME, systemName, storeId);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _pageRepository.Table
                 select p;
@@ -93,7 +93,7 @@ public class PageService : IPageService
     public virtual async Task<IList<Page>> GetAllPages(string storeId, bool ignoreAcl = false)
     {
         var key = string.Format(CacheKey.PAGES_ALL_KEY, storeId, ignoreAcl);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _pageRepository.Table
                 select p;
@@ -135,7 +135,7 @@ public class PageService : IPageService
         await _pageRepository.InsertAsync(page);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PAGES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PAGES_PATTERN_KEY);
         //event notification
         await _mediator.EntityInserted(page);
     }
@@ -151,7 +151,7 @@ public class PageService : IPageService
         await _pageRepository.UpdateAsync(page);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PAGES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PAGES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(page);
@@ -168,7 +168,7 @@ public class PageService : IPageService
         await _pageRepository.DeleteAsync(page);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PAGES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PAGES_PATTERN_KEY);
         //event notification
         await _mediator.EntityDeleted(page);
     }

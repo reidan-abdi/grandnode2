@@ -22,15 +22,15 @@ public class CountryService : ICountryService
     /// </summary>
     /// <param name="countryRepository">Country repository</param>
     /// <param name="mediator">Mediator</param>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="accessControlConfig">Access control</param>
     public CountryService(
         IRepository<Country> countryRepository,
         IMediator mediator,
-        ICacheBase cacheBase,
+        ICache cache,
         AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _accessControlConfig = accessControlConfig;
         _countryRepository = countryRepository;
         _mediator = mediator;
@@ -42,7 +42,7 @@ public class CountryService : ICountryService
 
     private readonly IRepository<Country> _countryRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly AccessControlConfig _accessControlConfig;
 
     #endregion
@@ -61,7 +61,7 @@ public class CountryService : ICountryService
     {
         var key = string.Format(CacheKey.COUNTRIES_ALL_KEY, languageId, storeId, showHidden);
 
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _countryRepository.Table
                 select p;
@@ -124,7 +124,7 @@ public class CountryService : ICountryService
             return null;
 
         var key = string.Format(CacheKey.COUNTRIES_BY_KEY, countryId);
-        return await _cacheBase.GetAsync(key, () => _countryRepository.GetByIdAsync(countryId));
+        return await _cache.GetAsync(key, () => _countryRepository.GetByIdAsync(countryId));
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public class CountryService : ICountryService
     public virtual async Task<Country> GetCountryByTwoLetterIsoCode(string twoLetterIsoCode)
     {
         var key = string.Format(CacheKey.COUNTRIES_BY_TWOLETTER, twoLetterIsoCode);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             return await _countryRepository.GetOneAsync(x => x.TwoLetterIsoCode == twoLetterIsoCode);
         });
@@ -167,7 +167,7 @@ public class CountryService : ICountryService
     public virtual async Task<Country> GetCountryByThreeLetterIsoCode(string threeLetterIsoCode)
     {
         var key = string.Format(CacheKey.COUNTRIES_BY_THREELETTER, threeLetterIsoCode);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             return await _countryRepository.GetOneAsync(x => x.ThreeLetterIsoCode == threeLetterIsoCode);
         });
@@ -183,7 +183,7 @@ public class CountryService : ICountryService
 
         await _countryRepository.InsertAsync(country);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.COUNTRIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COUNTRIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(country);
@@ -199,7 +199,7 @@ public class CountryService : ICountryService
 
         await _countryRepository.UpdateAsync(country);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.COUNTRIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COUNTRIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(country);
@@ -215,7 +215,7 @@ public class CountryService : ICountryService
 
         await _countryRepository.DeleteAsync(country);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.COUNTRIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COUNTRIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(country);

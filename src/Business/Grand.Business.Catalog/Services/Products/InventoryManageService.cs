@@ -20,14 +20,14 @@ public class InventoryManageService : IInventoryManageService
         IRepository<Product> productRepository,
         IRepository<InventoryJournal> inventoryJournalRepository,
         IStockQuantityService stockQuantityService,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator,
         CatalogSettings catalogSettings)
     {
         _productRepository = productRepository;
         _inventoryJournalRepository = inventoryJournalRepository;
         _stockQuantityService = stockQuantityService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
         _catalogSettings = catalogSettings;
     }
@@ -39,7 +39,7 @@ public class InventoryManageService : IInventoryManageService
     private readonly IRepository<Product> _productRepository;
     private readonly IRepository<InventoryJournal> _inventoryJournalRepository;
     private readonly IStockQuantityService _stockQuantityService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
     private readonly CatalogSettings _catalogSettings;
 
@@ -320,7 +320,7 @@ public class InventoryManageService : IInventoryManageService
                         await _productRepository.UpdateField(product.Id, x => x.LowStock, product.LowStock);
                         await _productRepository.UpdateField(product.Id, x => x.UpdatedOnUtc, DateTime.UtcNow);
                         //cache
-                        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+                        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
                         //event notification
                         await _mediator.EntityUpdated(product);
@@ -335,7 +335,7 @@ public class InventoryManageService : IInventoryManageService
                         await _productRepository.UpdateField(product.Id, x => x.UpdatedOnUtc, DateTime.UtcNow);
 
                         //cache
-                        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+                        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
                         //event
                         await _mediator.Publish(new ProductUnPublishEvent(product));
@@ -361,7 +361,7 @@ public class InventoryManageService : IInventoryManageService
                             await _productRepository.UpdateField(product.Id, x => x.UpdatedOnUtc, DateTime.UtcNow);
 
                             //cache
-                            await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+                            await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
                             //event notification
                             await _mediator.EntityUpdated(product);
@@ -376,7 +376,7 @@ public class InventoryManageService : IInventoryManageService
                             await _productRepository.UpdateField(product.Id, x => x.UpdatedOnUtc, DateTime.UtcNow);
 
                             //cache
-                            await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+                            await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
                             //event
                             await _mediator.Publish(new ProductPublishEvent(product));
@@ -474,7 +474,7 @@ public class InventoryManageService : IInventoryManageService
         }
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
         //event notification
         await _mediator.EntityUpdated(product);
@@ -534,7 +534,7 @@ public class InventoryManageService : IInventoryManageService
         }
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
         //event notification
         await _mediator.EntityUpdated(product);
@@ -578,7 +578,7 @@ public class InventoryManageService : IInventoryManageService
         }
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
         //event notification
         await _mediator.EntityUpdated(product);
@@ -630,7 +630,7 @@ public class InventoryManageService : IInventoryManageService
         }
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
         //event notification
         await _mediator.EntityUpdated(product);
@@ -665,7 +665,7 @@ public class InventoryManageService : IInventoryManageService
             await ManageAttributesInventory(product, shipment, shipmentItem);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
         //event notification
         await _mediator.EntityUpdated(product);
@@ -698,7 +698,7 @@ public class InventoryManageService : IInventoryManageService
             await ReverseBookedInventory(product, inventoryJournal);
 
             //cache
-            await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+            await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
             //event notification
             await _mediator.EntityUpdated(product);
@@ -724,7 +724,7 @@ public class InventoryManageService : IInventoryManageService
 
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
         //event notification
         if (mediator)

@@ -9,10 +9,10 @@ public class ShippingByWeightService : IShippingByWeightService
 {
     #region Ctor
 
-    public ShippingByWeightService(ICacheBase cacheBase,
+    public ShippingByWeightService(ICache cache,
         IRepository<ShippingByWeightRecord> sbwRepository)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _sbwRepository = sbwRepository;
     }
 
@@ -28,7 +28,7 @@ public class ShippingByWeightService : IShippingByWeightService
     #region Fields
 
     private readonly IRepository<ShippingByWeightRecord> _sbwRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -40,13 +40,13 @@ public class ShippingByWeightService : IShippingByWeightService
 
         await _sbwRepository.DeleteAsync(shippingByWeightRecord);
 
-        await _cacheBase.RemoveByPrefix(SHIPPINGBYWEIGHT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(SHIPPINGBYWEIGHT_PATTERN_KEY);
     }
 
     public virtual async Task<IPagedList<ShippingByWeightRecord>> GetAll(int pageIndex = 0, int pageSize = int.MaxValue)
     {
         var key = string.Format(SHIPPINGBYWEIGHT_ALL_KEY, pageIndex, pageSize);
-        return await _cacheBase.GetAsync(key, () =>
+        return await _cache.GetAsync(key, () =>
         {
             var query = from sbw in _sbwRepository.Table
                 select sbw;
@@ -105,7 +105,7 @@ public class ShippingByWeightService : IShippingByWeightService
 
         await _sbwRepository.InsertAsync(shippingByWeightRecord);
 
-        await _cacheBase.RemoveByPrefix(SHIPPINGBYWEIGHT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(SHIPPINGBYWEIGHT_PATTERN_KEY);
     }
 
     public virtual async Task UpdateShippingByWeightRecord(ShippingByWeightRecord shippingByWeightRecord)
@@ -114,7 +114,7 @@ public class ShippingByWeightService : IShippingByWeightService
 
         await _sbwRepository.UpdateAsync(shippingByWeightRecord);
 
-        await _cacheBase.RemoveByPrefix(SHIPPINGBYWEIGHT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(SHIPPINGBYWEIGHT_PATTERN_KEY);
     }
 
     #endregion

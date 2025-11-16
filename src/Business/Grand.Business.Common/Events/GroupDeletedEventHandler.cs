@@ -10,18 +10,18 @@ namespace Grand.Business.Common.Events;
 
 public class GroupDeletedEventHandler : INotificationHandler<EntityDeleted<CustomerGroup>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<Customer> _customerRepository;
     private readonly IRepository<Product> _productRepository;
 
     public GroupDeletedEventHandler(
         IRepository<Customer> customerRepository,
         IRepository<Product> productRepository,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _customerRepository = customerRepository;
         _productRepository = productRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public async Task Handle(EntityDeleted<CustomerGroup> notification, CancellationToken cancellationToken)
@@ -34,6 +34,6 @@ public class GroupDeletedEventHandler : INotificationHandler<EntityDeleted<Custo
             notification.Entity.Id);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
     }
 }

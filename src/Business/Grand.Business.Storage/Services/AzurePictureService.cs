@@ -21,7 +21,7 @@ public class AzurePictureService : PictureService
     public AzurePictureService(IRepository<Picture> pictureRepository,
         ILogger<AzurePictureService> logger,
         IMediator mediator,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediaFileStore mediaFileStore,
         MediaSettings mediaSettings,
         StorageSettings storageSettings,
@@ -31,7 +31,7 @@ public class AzurePictureService : PictureService
         : base(pictureRepository,
             logger,
             mediator,
-            cacheBase,
+            cache,
             mediaFileStore,
             mediaSettings,
             storageSettings)

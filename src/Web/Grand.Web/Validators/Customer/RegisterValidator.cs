@@ -150,7 +150,7 @@ public class RegisterValidator : BaseGrandValidator<RegisterModel>
             }
 
             if (customerSettings.UsernamesEnabled)
-                if (await customerService.GetCustomerByUsername(x.Username) != null)
+                if (await customerService.GetCustomerByName(x.Username) != null)
                     context.AddFailure(translationService.GetResource("Account.Register.Errors.UsernameAlreadyExists"));
         });
     }

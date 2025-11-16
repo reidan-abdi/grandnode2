@@ -11,22 +11,22 @@ namespace Grand.Business.System.Services.Admin;
 public class AdminSiteMapService : IAdminSiteMapService
 {
     private readonly IRepository<AdminSiteMap> _adminSiteMapRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     public AdminSiteMapService(
         IRepository<AdminSiteMap> adminSiteMapRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _adminSiteMapRepository = adminSiteMapRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
     public virtual async Task<IList<AdminSiteMap>> GetSiteMap()
     {
-        return await _cacheBase.GetAsync(CacheKey.ADMIN_SITEMAP_KEY, () =>
+        return await _cache.GetAsync(CacheKey.ADMIN_SITEMAP_KEY, () =>
         {
             var query = from c in _adminSiteMapRepository.Table
                 orderby c.DisplayOrder
@@ -43,7 +43,7 @@ public class AdminSiteMapService : IAdminSiteMapService
         await _adminSiteMapRepository.InsertAsync(entity);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ADMIN_SITEMAP_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADMIN_SITEMAP_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(entity);
@@ -56,7 +56,7 @@ public class AdminSiteMapService : IAdminSiteMapService
         await _adminSiteMapRepository.UpdateAsync(entity);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ADMIN_SITEMAP_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADMIN_SITEMAP_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(entity);
@@ -69,7 +69,7 @@ public class AdminSiteMapService : IAdminSiteMapService
         await _adminSiteMapRepository.DeleteAsync(entity);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ADMIN_SITEMAP_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADMIN_SITEMAP_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(entity);

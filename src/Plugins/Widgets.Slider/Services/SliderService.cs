@@ -10,12 +10,12 @@ public class SliderService : ISliderService
 {
     public SliderService(IRepository<PictureSlider> repositoryPictureSlider,
         IWorkContext workContext, IAclService aclService,
-        ICacheBase cacheManager)
+        ICache cacheManager)
     {
         _repositoryPictureSlider = repositoryPictureSlider;
         _workContext = workContext;
         _aclService = aclService;
-        _cacheBase = cacheManager;
+        _cache = cacheManager;
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public class SliderService : ISliderService
         ArgumentNullException.ThrowIfNull(slider);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(SLIDERS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(SLIDERS_PATTERN_KEY);
 
         await _repositoryPictureSlider.DeleteAsync(slider);
     }
@@ -50,7 +50,7 @@ public class SliderService : ISliderService
     {
         var cacheKey = string.Format(SLIDERS_MODEL_KEY, _workContext.CurrentStore.Id, sliderType.ToString(),
             objectEntry);
-        return await _cacheBase.GetAsync(cacheKey, async () =>
+        return await _cache.GetAsync(cacheKey, async () =>
         {
             var query = from s in _repositoryPictureSlider.Table
                 where s.SliderTypeId == sliderType && s.Published
@@ -85,7 +85,7 @@ public class SliderService : ISliderService
         ArgumentNullException.ThrowIfNull(slide);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(SLIDERS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(SLIDERS_PATTERN_KEY);
 
         await _repositoryPictureSlider.InsertAsync(slide);
     }
@@ -99,7 +99,7 @@ public class SliderService : ISliderService
         ArgumentNullException.ThrowIfNull(slide);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(SLIDERS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(SLIDERS_PATTERN_KEY);
 
         await _repositoryPictureSlider.UpdateAsync(slide);
     }
@@ -113,7 +113,7 @@ public class SliderService : ISliderService
         ArgumentNullException.ThrowIfNull(slide);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(SLIDERS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(SLIDERS_PATTERN_KEY);
 
         await _repositoryPictureSlider.DeleteAsync(slide);
     }
@@ -123,7 +123,7 @@ public class SliderService : ISliderService
     private readonly IRepository<PictureSlider> _repositoryPictureSlider;
     private readonly IAclService _aclService;
     private readonly IWorkContext _workContext;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     /// <summary>
     ///     Key for sliders

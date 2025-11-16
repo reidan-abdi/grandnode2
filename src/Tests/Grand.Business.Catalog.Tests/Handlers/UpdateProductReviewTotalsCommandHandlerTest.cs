@@ -16,7 +16,7 @@ namespace Grand.Business.Catalog.Tests.Handlers;
 [TestClass]
 public class UpdateProductReviewTotalsCommandHandlerTest
 {
-    private Mock<ICacheBase> _cacheBaseMock;
+    private Mock<ICache> _cacheBaseMock;
     private Mock<IMongoCollection<Product>> _mongoCollectionMock;
     private IRepository<Product> _productRepository;
     private Mock<IProductReviewService> _productReviewServiceMock;
@@ -39,7 +39,7 @@ public class UpdateProductReviewTotalsCommandHandlerTest
             default));
 
         _productRepository = new MongoDBRepositoryTest<Product>();
-        _cacheBaseMock = new Mock<ICacheBase>();
+        _cacheBaseMock = new Mock<ICache>();
 
         _productReviewServiceMock = new Mock<IProductReviewService>();
         IPagedList<ProductReview> pagedListReviews = new PagedList<ProductReview>(reviews, 0, 234567);

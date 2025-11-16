@@ -20,13 +20,13 @@ public class WidgetController : BaseAdminController
 
     public WidgetController(IWidgetService widgetService,
         ISettingService settingService,
-        ICacheBase cacheBase,
+        ICache cache,
         IServiceProvider serviceProvider,
         WidgetSettings widgetSettings)
     {
         _widgetService = widgetService;
         _widgetSettings = widgetSettings;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _serviceProvider = serviceProvider;
         _settingService = settingService;
     }
@@ -37,7 +37,7 @@ public class WidgetController : BaseAdminController
 
     private readonly IWidgetService _widgetService;
     private readonly ISettingService _settingService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IServiceProvider _serviceProvider;
     private readonly WidgetSettings _widgetSettings;
 
@@ -109,7 +109,7 @@ public class WidgetController : BaseAdminController
             }
         }
 
-        await _cacheBase.Clear();
+        await _cache.Clear();
 
         return new JsonResult("");
     }

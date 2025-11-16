@@ -18,11 +18,11 @@ public class WarehouseService : IWarehouseService
     public WarehouseService(
         IRepository<Warehouse> warehouseRepository,
         IMediator mediator,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _warehouseRepository = warehouseRepository;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -31,7 +31,7 @@ public class WarehouseService : IWarehouseService
 
     private readonly IRepository<Warehouse> _warehouseRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -45,7 +45,7 @@ public class WarehouseService : IWarehouseService
     public virtual Task<Warehouse> GetWarehouseById(string warehouseId)
     {
         var key = string.Format(CacheKey.WAREHOUSES_BY_ID_KEY, warehouseId);
-        return _cacheBase.GetAsync(key, () => _warehouseRepository.GetByIdAsync(warehouseId));
+        return _cache.GetAsync(key, () => _warehouseRepository.GetByIdAsync(warehouseId));
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class WarehouseService : IWarehouseService
     /// <returns>Warehouses</returns>
     public virtual async Task<IList<Warehouse>> GetAllWarehouses()
     {
-        return await _cacheBase.GetAsync(CacheKey.WAREHOUSES_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.WAREHOUSES_ALL, async () =>
         {
             var query = from wh in _warehouseRepository.Table
                 orderby wh.DisplayOrder
@@ -74,7 +74,7 @@ public class WarehouseService : IWarehouseService
         await _warehouseRepository.InsertAsync(warehouse);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.WAREHOUSES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.WAREHOUSES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(warehouse);
@@ -91,7 +91,7 @@ public class WarehouseService : IWarehouseService
         await _warehouseRepository.UpdateAsync(warehouse);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.WAREHOUSES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.WAREHOUSES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(warehouse);
@@ -108,9 +108,9 @@ public class WarehouseService : IWarehouseService
         await _warehouseRepository.DeleteAsync(warehouse);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.WAREHOUSES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.WAREHOUSES_PATTERN_KEY);
         //clear product cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(warehouse);

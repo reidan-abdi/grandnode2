@@ -98,7 +98,7 @@ public class PriceServiceTests
             //tempCurrency.Setup(instance => instance.ConvertToPrimaryStoreCurrency(It.IsAny<double>(), _currency)).ReturnsAsync(5);
             //_currencyService = tempCurrency.Object;
         }
-        var cacheManager = new Mock<ICacheBase>().Object;
+        var cacheManager = new Mock<ICache>().Object;
         IRepository<Currency> _currencyRepository;
         var tempCurrencyRepository = new Mock<IRepository<Currency>>();
         {

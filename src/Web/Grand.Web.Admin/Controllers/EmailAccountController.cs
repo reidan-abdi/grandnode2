@@ -18,7 +18,7 @@ namespace Grand.Web.Admin.Controllers;
 [PermissionAuthorize(PermissionSystemName.EmailAccounts)]
 public class EmailAccountController : BaseAdminController
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IEmailAccountService _emailAccountService;
     private readonly EmailAccountSettings _emailAccountSettings;
     private readonly IEmailAccountViewModelService _emailAccountViewModelService;
@@ -28,14 +28,14 @@ public class EmailAccountController : BaseAdminController
     public EmailAccountController(IEmailAccountViewModelService emailAccountViewModelService,
         IEmailAccountService emailAccountService,
         ITranslationService translationService, ISettingService settingService,
-        EmailAccountSettings emailAccountSettings, ICacheBase cacheBase)
+        EmailAccountSettings emailAccountSettings, ICache cache)
     {
         _emailAccountViewModelService = emailAccountViewModelService;
         _emailAccountService = emailAccountService;
         _translationService = translationService;
         _emailAccountSettings = emailAccountSettings;
         _settingService = settingService;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public IActionResult List()
@@ -72,7 +72,7 @@ public class EmailAccountController : BaseAdminController
         }
 
         //now clear cache
-        await _cacheBase.Clear();
+        await _cache.Clear();
 
         return RedirectToAction("List");
     }

@@ -12,7 +12,7 @@ namespace Grand.Business.Catalog.Tests.Services.Categories;
 [TestClass]
 public class CategoryLayoutServiceTest
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private CategoryLayoutService _categoryLayoutService;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<CategoryLayout>> _repostioryMock;
@@ -21,7 +21,7 @@ public class CategoryLayoutServiceTest
     public void Init()
     {
         _repostioryMock = new Mock<IRepository<CategoryLayout>>();
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _mediatorMock = new Mock<IMediator>();
         _categoryLayoutService =
             new CategoryLayoutService(_repostioryMock.Object, _cacheMock.Object, _mediatorMock.Object);

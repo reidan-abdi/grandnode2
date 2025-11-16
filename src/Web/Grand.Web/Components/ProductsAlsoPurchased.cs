@@ -18,7 +18,7 @@ public class ProductsAlsoPurchasedViewComponent : BaseViewComponent
     public ProductsAlsoPurchasedViewComponent(
         IProductService productService,
         IMediator mediator,
-        ICacheBase cacheBase,
+        ICache cache,
         IOrderReportService orderReportService,
         IWorkContext workContext,
         CatalogSettings catalogSettings
@@ -26,7 +26,7 @@ public class ProductsAlsoPurchasedViewComponent : BaseViewComponent
     {
         _productService = productService;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _orderReportService = orderReportService;
         _workContext = workContext;
         _catalogSettings = catalogSettings;
@@ -42,7 +42,7 @@ public class ProductsAlsoPurchasedViewComponent : BaseViewComponent
             return Content("");
 
         //load and cache report
-        var productIds = await _cacheBase.GetAsync(
+        var productIds = await _cache.GetAsync(
             string.Format(CacheKeyConst.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _workContext.CurrentStore.Id),
             () =>
                 _orderReportService
@@ -73,7 +73,7 @@ public class ProductsAlsoPurchasedViewComponent : BaseViewComponent
 
     private readonly IProductService _productService;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IOrderReportService _orderReportService;
     private readonly IWorkContext _workContext;
     private readonly CatalogSettings _catalogSettings;

@@ -18,14 +18,14 @@ public class TaxCategoryService : ITaxCategoryService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="taxCategoryRepository">Tax category repository</param>
     /// <param name="mediator">Mediator</param>
-    public TaxCategoryService(ICacheBase cacheBase,
+    public TaxCategoryService(ICache cache,
         IRepository<TaxCategory> taxCategoryRepository,
         IMediator mediator)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _taxCategoryRepository = taxCategoryRepository;
         _mediator = mediator;
     }
@@ -36,7 +36,7 @@ public class TaxCategoryService : ITaxCategoryService
 
     private readonly IRepository<TaxCategory> _taxCategoryRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -49,7 +49,7 @@ public class TaxCategoryService : ITaxCategoryService
     public virtual async Task<IList<TaxCategory>> GetAllTaxCategories()
     {
         var key = string.Format(CacheKey.TAXCATEGORIES_ALL_KEY);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from tc in _taxCategoryRepository.Table
                 orderby tc.DisplayOrder
@@ -66,7 +66,7 @@ public class TaxCategoryService : ITaxCategoryService
     public virtual Task<TaxCategory> GetTaxCategoryById(string taxCategoryId)
     {
         var key = string.Format(CacheKey.TAXCATEGORIES_BY_ID_KEY, taxCategoryId);
-        return _cacheBase.GetAsync(key, () => _taxCategoryRepository.GetByIdAsync(taxCategoryId));
+        return _cache.GetAsync(key, () => _taxCategoryRepository.GetByIdAsync(taxCategoryId));
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class TaxCategoryService : ITaxCategoryService
 
         await _taxCategoryRepository.InsertAsync(taxCategory);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.TAXCATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.TAXCATEGORIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(taxCategory);
@@ -95,7 +95,7 @@ public class TaxCategoryService : ITaxCategoryService
 
         await _taxCategoryRepository.UpdateAsync(taxCategory);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.TAXCATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.TAXCATEGORIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(taxCategory);
@@ -112,10 +112,10 @@ public class TaxCategoryService : ITaxCategoryService
         await _taxCategoryRepository.DeleteAsync(taxCategory);
 
         //clear tax categories cache
-        await _cacheBase.RemoveByPrefix(CacheKey.TAXCATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.TAXCATEGORIES_PATTERN_KEY);
 
         //clear product cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(taxCategory);

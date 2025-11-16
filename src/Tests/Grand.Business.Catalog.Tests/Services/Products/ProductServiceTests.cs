@@ -23,7 +23,7 @@ namespace Grand.Business.Catalog.Tests.Services.Products;
 public class ProductServiceTests
 {
     private IAclService _aclServiceMock;
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private IRepository<Product> _productRepository;
     private ProductService _productService;
@@ -42,9 +42,9 @@ public class ProductServiceTests
             .Returns(Task.FromResult(new Product()));
 
         _aclServiceMock = new AclService(new AccessControlConfig());
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _productService = new ProductService(_cacheBase, _productRepository, _workContextMock.Object,
+        _productService = new ProductService(_cache, _productRepository, _workContextMock.Object,
             _mediatorMock.Object, _aclServiceMock);
     }
 

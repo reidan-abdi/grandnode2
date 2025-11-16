@@ -17,7 +17,7 @@ namespace Grand.Web.Features.Handlers.Catalog;
 
 public class GetCollectionHandler : IRequestHandler<GetCollection, CollectionModel>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     private readonly CatalogSettings _catalogSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -26,13 +26,13 @@ public class GetCollectionHandler : IRequestHandler<GetCollection, CollectionMod
 
     public GetCollectionHandler(
         IMediator mediator,
-        ICacheBase cacheBase,
+        ICache cache,
         ISpecificationAttributeService specificationAttributeService,
         IHttpContextAccessor httpContextAccessor,
         CatalogSettings catalogSettings)
     {
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _specificationAttributeService = specificationAttributeService;
         _httpContextAccessor = httpContextAccessor;
         _catalogSettings = catalogSettings;
@@ -66,7 +66,7 @@ public class GetCollectionHandler : IRequestHandler<GetCollection, CollectionMod
                 request.Collection.Id,
                 string.Join(",", request.Customer.GetCustomerGroupIds()),
                 request.Store.Id);
-            var hasFeaturedProductsCache = await _cacheBase.GetAsync<bool?>(cacheKey, async () =>
+            var hasFeaturedProductsCache = await _cache.GetAsync<bool?>(cacheKey, async () =>
             {
                 featuredProducts = (await _mediator.Send(new GetSearchProductsQuery {
                     PageSize = _catalogSettings.LimitOfFeaturedProducts,

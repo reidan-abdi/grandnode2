@@ -10,23 +10,23 @@ namespace Grand.Business.Checkout.Services.Orders;
 
 public class OrderStatusService : IOrderStatusService
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
     private readonly IRepository<OrderStatus> _orderStatusRepository;
 
     public OrderStatusService(
         IRepository<OrderStatus> orderStatusRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _orderStatusRepository = orderStatusRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
     public virtual async Task<IList<OrderStatus>> GetAll()
     {
-        var orderStatuses = await _cacheBase.GetAsync(CacheKey.ORDER_STATUS_ALL, async () =>
+        var orderStatuses = await _cache.GetAsync(CacheKey.ORDER_STATUS_ALL, async () =>
         {
             var query = from p in _orderStatusRepository.Table
                 select p;
@@ -56,7 +56,7 @@ public class OrderStatusService : IOrderStatusService
         await _orderStatusRepository.InsertAsync(orderStatus);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ORDER_STATUS_ALL);
+        await _cache.RemoveByPrefix(CacheKey.ORDER_STATUS_ALL);
 
         //event notification
         await _mediator.EntityInserted(orderStatus);
@@ -70,7 +70,7 @@ public class OrderStatusService : IOrderStatusService
         await _orderStatusRepository.UpdateAsync(orderStatus);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ORDER_STATUS_ALL);
+        await _cache.RemoveByPrefix(CacheKey.ORDER_STATUS_ALL);
 
         //event notification
         await _mediator.EntityUpdated(orderStatus);
@@ -86,7 +86,7 @@ public class OrderStatusService : IOrderStatusService
         await _orderStatusRepository.DeleteAsync(orderStatus);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.ORDER_STATUS_ALL);
+        await _cache.RemoveByPrefix(CacheKey.ORDER_STATUS_ALL);
 
         //event notification
         await _mediator.EntityDeleted(orderStatus);

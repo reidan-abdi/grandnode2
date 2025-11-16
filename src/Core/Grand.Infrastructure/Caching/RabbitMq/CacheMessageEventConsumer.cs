@@ -5,9 +5,9 @@ namespace Grand.Infrastructure.Caching.RabbitMq;
 
 public class CacheMessageEventConsumer : IConsumer<CacheMessageEvent>
 {
-    private readonly ICacheBase _cache;
+    private readonly ICache _cache;
 
-    public CacheMessageEventConsumer(ICacheBase cache)
+    public CacheMessageEventConsumer(ICache cache)
     {
         _cache = cache;
     }

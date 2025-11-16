@@ -21,7 +21,7 @@ namespace Grand.Business.Catalog.Tests.Services.Categories;
 public class CategoryServiceTests
 {
     private Mock<IAclService> _aclServiceMock;
-    private Mock<ICacheBase> _casheManagerMock;
+    private Mock<ICache> _casheManagerMock;
     private Mock<IRepository<Category>> _categoryRepositoryMock;
     private CategoryService _categoryService;
     private Mock<IMediator> _mediatorMock;
@@ -35,7 +35,7 @@ public class CategoryServiceTests
     {
         var settingsPath = Path.Combine("", CommonPath.AppData, CommonPath.SettingsFile);
         DataSettingsManager.Initialize(settingsPath);
-        _casheManagerMock = new Mock<ICacheBase>();
+        _casheManagerMock = new Mock<ICache>();
         _categoryRepositoryMock = new Mock<IRepository<Category>>();
         _productRepositoryMock = new Mock<MongoRepository<Product>>(Mock.Of<IAuditInfoProvider>());
         _workContextMock = new Mock<IWorkContext>();

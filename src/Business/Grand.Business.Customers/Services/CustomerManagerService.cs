@@ -81,7 +81,7 @@ public class CustomerManagerService : ICustomerManagerService
     public virtual async Task<CustomerLoginResults> LoginCustomer(string usernameOrEmail, string password)
     {
         var customer = _customerSettings.UsernamesEnabled
-            ? await _customerService.GetCustomerByUsername(usernameOrEmail)
+            ? await _customerService.GetCustomerByName(usernameOrEmail)
             : await _customerService.GetCustomerByEmail(usernameOrEmail);
 
         var pwd = customer.PasswordFormatId switch {

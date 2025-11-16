@@ -16,7 +16,7 @@ namespace Grand.Business.Common.Tests.Events;
 [TestClass]
 public class GroupDeletedEventHandlerTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private GroupDeletedEventHandler _handler;
     private IRepository<Product> _product;
 
@@ -27,10 +27,10 @@ public class GroupDeletedEventHandlerTests
     {
         _repository = new MongoDBRepositoryTest<Customer>();
         _product = new MongoDBRepositoryTest<Product>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), new Mock<IMediator>().Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), new Mock<IMediator>().Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
-        _handler = new GroupDeletedEventHandler(_repository, _product, _cacheBase);
+        _handler = new GroupDeletedEventHandler(_repository, _product, _cache);
     }
 
     [TestMethod]

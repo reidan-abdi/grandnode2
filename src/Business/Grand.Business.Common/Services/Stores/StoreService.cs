@@ -18,14 +18,14 @@ public class StoreService : IStoreService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="storeRepository">Store repository</param>
     /// <param name="mediator">Mediator</param>
-    public StoreService(ICacheBase cacheBase,
+    public StoreService(ICache cache,
         IRepository<Store> storeRepository,
         IMediator mediator)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _storeRepository = storeRepository;
         _mediator = mediator;
     }
@@ -36,7 +36,7 @@ public class StoreService : IStoreService
 
     private readonly IRepository<Store> _storeRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     private List<Store> _allStores;
 
@@ -50,7 +50,7 @@ public class StoreService : IStoreService
     /// <returns>Stores</returns>
     public virtual async Task<IList<Store>> GetAllStores()
     {
-        return _allStores ??= await _cacheBase.GetAsync(CacheKey.STORES_ALL_KEY, async () =>
+        return _allStores ??= await _cache.GetAsync(CacheKey.STORES_ALL_KEY, async () =>
         {
             return await Task.FromResult(_storeRepository.Table.OrderBy(x => x.DisplayOrder).ToList());
         });
@@ -62,7 +62,7 @@ public class StoreService : IStoreService
     /// <returns>Stores</returns>
     public virtual IList<Store> GetAll()
     {
-        return _allStores ??= _cacheBase.Get(CacheKey.STORES_ALL_KEY, () =>
+        return _allStores ??= _cache.Get(CacheKey.STORES_ALL_KEY, () =>
         {
             return _storeRepository.Table.OrderBy(x => x.DisplayOrder).ToList();
         });
@@ -76,7 +76,7 @@ public class StoreService : IStoreService
     public virtual Task<Store> GetStoreById(string storeId)
     {
         var key = string.Format(CacheKey.STORES_BY_ID_KEY, storeId);
-        return _cacheBase.GetAsync(key, () => _storeRepository.GetByIdAsync(storeId));
+        return _cache.GetAsync(key, () => _storeRepository.GetByIdAsync(storeId));
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public class StoreService : IStoreService
         await _storeRepository.InsertAsync(store);
 
         //clear cache
-        await _cacheBase.Clear();
+        await _cache.Clear();
 
         //event notification
         await _mediator.EntityInserted(store);
@@ -107,7 +107,7 @@ public class StoreService : IStoreService
         await _storeRepository.UpdateAsync(store);
 
         //clear cache
-        await _cacheBase.Clear();
+        await _cache.Clear();
 
         //event notification
         await _mediator.EntityUpdated(store);
@@ -128,7 +128,7 @@ public class StoreService : IStoreService
         await _storeRepository.DeleteAsync(store);
 
         //clear cache
-        await _cacheBase.Clear();
+        await _cache.Clear();
 
         //event notification
         await _mediator.EntityDeleted(store);

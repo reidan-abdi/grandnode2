@@ -25,7 +25,7 @@ public class CustomerValidator : BaseGrandValidator<CustomerDto>
 
         RuleFor(x => x).MustAsync(async (x, _) =>
         {
-            var username = await customerService.GetCustomerByUsername(x.Username);
+            var username = await customerService.GetCustomerByName(x.Username);
             return username == null || username.Id == x.Id || !customerSettings.UsernamesEnabled;
         }).WithMessage(translationService.GetResource("Api.Customers.Customer.Fields.Username.Registered"));
 

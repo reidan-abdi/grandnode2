@@ -16,7 +16,7 @@ public class KnowledgebaseService : IKnowledgebaseService
 {
     private readonly AccessControlConfig _accessControlConfig;
     private readonly IRepository<KnowledgebaseArticleComment> _articleCommentRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<KnowledgebaseArticle> _knowledgebaseArticleRepository;
     private readonly IRepository<KnowledgebaseCategory> _knowledgebaseCategoryRepository;
     private readonly IMediator _mediator;
@@ -31,14 +31,14 @@ public class KnowledgebaseService : IKnowledgebaseService
         IRepository<KnowledgebaseArticleComment> articleCommentRepository,
         IMediator mediator,
         IWorkContext workContext,
-        ICacheBase cacheBase, AccessControlConfig accessControlConfig)
+        ICache cache, AccessControlConfig accessControlConfig)
     {
         _knowledgebaseCategoryRepository = knowledgebaseCategoryRepository;
         _knowledgebaseArticleRepository = knowledgebaseArticleRepository;
         _articleCommentRepository = articleCommentRepository;
         _mediator = mediator;
         _workContext = workContext;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _accessControlConfig = accessControlConfig;
     }
 
@@ -56,8 +56,8 @@ public class KnowledgebaseService : IKnowledgebaseService
             await UpdateKnowledgebaseCategory(child);
         }
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
 
         await _mediator.EntityDeleted(kc);
     }
@@ -69,8 +69,8 @@ public class KnowledgebaseService : IKnowledgebaseService
     public virtual async Task UpdateKnowledgebaseCategory(KnowledgebaseCategory kc)
     {
         await _knowledgebaseCategoryRepository.UpdateAsync(kc);
-        await _cacheBase.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
         await _mediator.EntityUpdated(kc);
     }
 
@@ -94,7 +94,7 @@ public class KnowledgebaseService : IKnowledgebaseService
         var key = string.Format(CacheKey.KNOWLEDGEBASE_CATEGORY_BY_ID, id,
             _workContext.CurrentCustomer.GetCustomerGroupIds(),
             _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _knowledgebaseCategoryRepository.Table
                 select p;
@@ -130,8 +130,8 @@ public class KnowledgebaseService : IKnowledgebaseService
     {
         await _knowledgebaseCategoryRepository.InsertAsync(kc);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
 
         await _mediator.EntityInserted(kc);
     }
@@ -190,8 +190,8 @@ public class KnowledgebaseService : IKnowledgebaseService
     public virtual async Task InsertKnowledgebaseArticle(KnowledgebaseArticle ka)
     {
         await _knowledgebaseArticleRepository.InsertAsync(ka);
-        await _cacheBase.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
         await _mediator.EntityInserted(ka);
     }
 
@@ -202,8 +202,8 @@ public class KnowledgebaseService : IKnowledgebaseService
     public virtual async Task UpdateKnowledgebaseArticle(KnowledgebaseArticle ka)
     {
         await _knowledgebaseArticleRepository.UpdateAsync(ka);
-        await _cacheBase.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
         await _mediator.EntityUpdated(ka);
     }
 
@@ -214,8 +214,8 @@ public class KnowledgebaseService : IKnowledgebaseService
     public virtual async Task DeleteKnowledgebaseArticle(KnowledgebaseArticle ka)
     {
         await _knowledgebaseArticleRepository.DeleteAsync(ka);
-        await _cacheBase.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ARTICLES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.KNOWLEDGEBASE_CATEGORIES_PATTERN_KEY);
         await _mediator.EntityDeleted(ka);
     }
 
@@ -242,7 +242,7 @@ public class KnowledgebaseService : IKnowledgebaseService
         var key = string.Format(CacheKey.KNOWLEDGEBASE_CATEGORIES,
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _knowledgebaseCategoryRepository.Table
                 select p;
@@ -276,7 +276,7 @@ public class KnowledgebaseService : IKnowledgebaseService
         var key = string.Format(CacheKey.ARTICLES, string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
 
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _knowledgebaseArticleRepository.Table
                 select p;
@@ -311,7 +311,7 @@ public class KnowledgebaseService : IKnowledgebaseService
         var key = string.Format(CacheKey.ARTICLE_BY_ID, id,
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _knowledgebaseArticleRepository.Table
                 select p;
@@ -346,7 +346,7 @@ public class KnowledgebaseService : IKnowledgebaseService
         var key = string.Format(CacheKey.ARTICLES_BY_CATEGORY_ID, categoryId,
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _knowledgebaseArticleRepository.Table
                 select p;
@@ -382,7 +382,7 @@ public class KnowledgebaseService : IKnowledgebaseService
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
 
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _knowledgebaseArticleRepository.Table
                 select p;
@@ -420,7 +420,7 @@ public class KnowledgebaseService : IKnowledgebaseService
         var key = string.Format(CacheKey.KNOWLEDGEBASE_CATEGORIES_BY_KEYWORD, keyword,
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _knowledgebaseCategoryRepository.Table
                 select p;
@@ -458,7 +458,7 @@ public class KnowledgebaseService : IKnowledgebaseService
         var key = string.Format(CacheKey.HOMEPAGE_ARTICLES,
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _knowledgebaseArticleRepository.Table
                 select p;

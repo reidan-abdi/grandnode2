@@ -11,24 +11,24 @@ namespace Grand.Business.Catalog.Queries.Handlers;
 
 public class GetPersonalizedProductsQueryHandler : IRequestHandler<GetPersonalizedProductsQuery, IList<Product>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<CustomerProduct> _customerProductRepository;
 
     private readonly IProductService _productService;
 
     public GetPersonalizedProductsQueryHandler(
         IProductService productService,
-        ICacheBase cacheBase,
+        ICache cache,
         IRepository<CustomerProduct> customerProductRepository)
     {
         _productService = productService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _customerProductRepository = customerProductRepository;
     }
 
     public async Task<IList<Product>> Handle(GetPersonalizedProductsQuery request, CancellationToken cancellationToken)
     {
-        return await _cacheBase.GetAsync(string.Format(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_KEY, request.CustomerId),
+        return await _cache.GetAsync(string.Format(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_KEY, request.CustomerId),
             async () =>
             {
                 var query = from cr in _customerProductRepository.Table

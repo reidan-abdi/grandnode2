@@ -21,11 +21,11 @@ public class TaxRateService : ITaxRateService
     /// <param name="cacheManager">Cache manager</param>
     /// <param name="taxRateRepository">Tax rate repository</param>
     public TaxRateService(IMediator mediator,
-        ICacheBase cacheManager,
+        ICache cacheManager,
         IRepository<TaxRate> taxRateRepository)
     {
         _mediator = mediator;
-        _cacheBase = cacheManager;
+        _cache = cacheManager;
         _taxRateRepository = taxRateRepository;
     }
 
@@ -42,7 +42,7 @@ public class TaxRateService : ITaxRateService
 
     private readonly IMediator _mediator;
     private readonly IRepository<TaxRate> _taxRateRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -58,7 +58,7 @@ public class TaxRateService : ITaxRateService
 
         await _taxRateRepository.DeleteAsync(taxRate);
 
-        await _cacheBase.RemoveByPrefix(TAXRATE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(TAXRATE_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(taxRate);
@@ -71,7 +71,7 @@ public class TaxRateService : ITaxRateService
     public virtual async Task<IPagedList<TaxRate>> GetAllTaxRates(int pageIndex = 0, int pageSize = int.MaxValue)
     {
         var key = string.Format(TAXRATE_ALL_KEY, pageIndex, pageSize);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from tr in _taxRateRepository.Table
                 orderby tr.StoreId, tr.CountryId, tr.StateProvinceId, tr.Zip, tr.TaxCategoryId
@@ -100,7 +100,7 @@ public class TaxRateService : ITaxRateService
 
         await _taxRateRepository.InsertAsync(taxRate);
 
-        await _cacheBase.RemoveByPrefix(TAXRATE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(TAXRATE_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(taxRate);
@@ -116,7 +116,7 @@ public class TaxRateService : ITaxRateService
 
         await _taxRateRepository.UpdateAsync(taxRate);
 
-        await _cacheBase.RemoveByPrefix(TAXRATE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(TAXRATE_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(taxRate);

@@ -18,11 +18,11 @@ public class PickupPointService : IPickupPointService
     public PickupPointService(
         IRepository<PickupPoint> pickupPointsRepository,
         IMediator mediator,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _pickupPointsRepository = pickupPointsRepository;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -31,7 +31,7 @@ public class PickupPointService : IPickupPointService
 
     private readonly IRepository<PickupPoint> _pickupPointsRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -45,7 +45,7 @@ public class PickupPointService : IPickupPointService
     public virtual Task<PickupPoint> GetPickupPointById(string pickupPointId)
     {
         var key = string.Format(CacheKey.PICKUPPOINTS_BY_ID_KEY, pickupPointId);
-        return _cacheBase.GetAsync(key, () => _pickupPointsRepository.GetByIdAsync(pickupPointId));
+        return _cache.GetAsync(key, () => _pickupPointsRepository.GetByIdAsync(pickupPointId));
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class PickupPointService : IPickupPointService
     /// <returns>Warehouses</returns>
     public virtual async Task<IList<PickupPoint>> GetAllPickupPoints()
     {
-        return await _cacheBase.GetAsync(CacheKey.PICKUPPOINTS_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.PICKUPPOINTS_ALL, async () =>
         {
             var query = from pp in _pickupPointsRepository.Table
                 orderby pp.DisplayOrder
@@ -85,7 +85,7 @@ public class PickupPointService : IPickupPointService
         await _pickupPointsRepository.InsertAsync(pickupPoint);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PICKUPPOINTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PICKUPPOINTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(pickupPoint);
@@ -102,7 +102,7 @@ public class PickupPointService : IPickupPointService
         await _pickupPointsRepository.UpdateAsync(pickupPoint);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PICKUPPOINTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PICKUPPOINTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(pickupPoint);
@@ -119,7 +119,7 @@ public class PickupPointService : IPickupPointService
         await _pickupPointsRepository.DeleteAsync(pickupPoint);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PICKUPPOINTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PICKUPPOINTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(pickupPoint);

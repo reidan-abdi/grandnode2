@@ -25,7 +25,7 @@ namespace Grand.Web.Features.Handlers.Catalog;
 
 public class GetSearchHandler : IRequestHandler<GetSearch, SearchModel>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     private readonly CatalogSettings _catalogSettings;
     private readonly ICategoryService _categoryService;
@@ -41,7 +41,7 @@ public class GetSearchHandler : IRequestHandler<GetSearch, SearchModel>
 
     public GetSearchHandler(
         ICategoryService categoryService,
-        ICacheBase cacheBase,
+        ICache cache,
         ITranslationService translationService,
         ICollectionService collectionService,
         IVendorService vendorService,
@@ -54,7 +54,7 @@ public class GetSearchHandler : IRequestHandler<GetSearch, SearchModel>
         VendorSettings vendorSettings)
     {
         _categoryService = categoryService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _translationService = translationService;
         _collectionService = collectionService;
         _vendorService = vendorService;
@@ -96,7 +96,7 @@ public class GetSearchHandler : IRequestHandler<GetSearch, SearchModel>
             request.Language.Id,
             string.Join(",", request.Customer.GetCustomerGroupIds()),
             request.Store.Id);
-        var categories = await _cacheBase.GetAsync(cacheKey, async () =>
+        var categories = await _cache.GetAsync(cacheKey, async () =>
         {
             var categoriesModel = new List<SearchModel.CategoryModel>();
             //all categories

@@ -15,7 +15,7 @@ namespace Grand.Business.Catalog.Tests.Services.Products;
 [TestClass]
 public class ProductAttributeServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private ProductAttributeService _productAttributeService;
     private IRepository<Product> _repository;
@@ -27,11 +27,11 @@ public class ProductAttributeServiceTests
         _repository = new MongoDBRepositoryTest<Product>();
         _repositoryproductAttribute = new MongoDBRepositoryTest<ProductAttribute>();
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
         _productAttributeService =
-            new ProductAttributeService(_cacheBase, _repositoryproductAttribute, _repository, _mediatorMock.Object);
+            new ProductAttributeService(_cache, _repositoryproductAttribute, _repository, _mediatorMock.Object);
     }
 
     [TestMethod]

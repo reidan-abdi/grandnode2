@@ -13,14 +13,14 @@ namespace Grand.Business.Customers.Tests.Services;
 public class CustomerAttributeServiceTests
 {
     private CustomerAttributeService _atrService;
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<CustomerAttribute>> _repositoryMock;
 
     [TestInitialize]
     public void Init()
     {
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _repositoryMock = new Mock<IRepository<CustomerAttribute>>();
         _mediatorMock = new Mock<IMediator>();
         _atrService = new CustomerAttributeService(_cacheMock.Object, _repositoryMock.Object, _mediatorMock.Object);

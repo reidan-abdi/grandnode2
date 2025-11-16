@@ -197,7 +197,7 @@ public class AccountController : BasePublicController
                 case CustomerLoginResults.Successful:
                 {
                     var customer = _customerSettings.UsernamesEnabled
-                        ? await _customerService.GetCustomerByUsername(model.Username)
+                        ? await _customerService.GetCustomerByName(model.Username)
                         : await _customerService.GetCustomerByEmail(model.Email);
                     //sign in
                     return await SignInAction(customer, model.RememberMe, returnUrl);
@@ -229,7 +229,7 @@ public class AccountController : BasePublicController
             return RedirectToRoute("HomePage");
 
         var customer = _customerSettings.UsernamesEnabled
-            ? await _customerService.GetCustomerByUsername(username)
+            ? await _customerService.GetCustomerByName(username)
             : await _customerService.GetCustomerByEmail(username);
         if (customer == null)
             return RedirectToRoute("HomePage");
@@ -260,7 +260,7 @@ public class AccountController : BasePublicController
             return RedirectToRoute("HomePage");
 
         var customer = _customerSettings.UsernamesEnabled
-            ? await _customerService.GetCustomerByUsername(username)
+            ? await _customerService.GetCustomerByName(username)
             : await _customerService.GetCustomerByEmail(username);
         if (customer == null)
             return RedirectToRoute("Login");
@@ -575,7 +575,7 @@ public class AccountController : BasePublicController
         }
         else
         {
-            var customer = await _customerService.GetCustomerByUsername(username);
+            var customer = await _customerService.GetCustomerByName(username);
             if (customer != null) return Json(new { Available = false, Text = statusText });
             statusText = _translationService.GetResource("Account.CheckUsernameAvailability.Available");
             usernameAvailable = true;

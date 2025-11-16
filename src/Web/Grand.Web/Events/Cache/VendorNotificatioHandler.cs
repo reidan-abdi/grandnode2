@@ -9,25 +9,25 @@ public class VendorNotificatioHandler :
     INotificationHandler<EntityUpdated<Domain.Vendors.Vendor>>,
     INotificationHandler<EntityDeleted<Domain.Vendors.Vendor>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
-    public VendorNotificatioHandler(ICacheBase cacheBase)
+    public VendorNotificatioHandler(ICache cache)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public async Task Handle(EntityDeleted<Domain.Vendors.Vendor> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.VENDOR_NAVIGATION_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.VENDOR_NAVIGATION_PATTERN_KEY);
     }
 
     public async Task Handle(EntityInserted<Domain.Vendors.Vendor> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.VENDOR_NAVIGATION_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.VENDOR_NAVIGATION_PATTERN_KEY);
     }
 
     public async Task Handle(EntityUpdated<Domain.Vendors.Vendor> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.VENDOR_NAVIGATION_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.VENDOR_NAVIGATION_PATTERN_KEY);
     }
 }

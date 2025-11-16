@@ -17,7 +17,7 @@ namespace Grand.Business.Cms.Tests.Services;
 [TestClass]
 public class RobotsTxtServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
 
     private IRepository<RobotsTxt> _repository;
@@ -32,13 +32,13 @@ public class RobotsTxtServiceTests
         _mediatorMock = new Mock<IMediator>();
         _workContextMock = new Mock<IWorkContext>();
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
         _workContextMock.Setup(c => c.CurrentStore).Returns(() => new Store { Id = "", Name = "test store" });
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
 
-        _robotsTxtService = new RobotsTxtService(_repository, _mediatorMock.Object, _cacheBase);
+        _robotsTxtService = new RobotsTxtService(_repository, _mediatorMock.Object, _cache);
     }
 
     [TestMethod]

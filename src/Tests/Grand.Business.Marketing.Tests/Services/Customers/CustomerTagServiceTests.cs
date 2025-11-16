@@ -14,7 +14,7 @@ namespace Grand.Business.Marketing.Tests.Services.Customers;
 [TestClass]
 public class CustomerTagServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private CustomerTagService _customerTagService;
     private Mock<IMediator> _mediatorMock;
     private IRepository<Customer> _repositoryCustomer;
@@ -29,10 +29,10 @@ public class CustomerTagServiceTests
         _repositoryCustomer = new MongoDBRepositoryTest<Customer>();
         _mediatorMock = new Mock<IMediator>();
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
         _customerTagService = new CustomerTagService(_repositoryCustomerTag, _repositoryCustomerTagProduct,
-            _repositoryCustomer, _mediatorMock.Object, _cacheBase);
+            _repositoryCustomer, _mediatorMock.Object, _cache);
     }
 
     [TestMethod]

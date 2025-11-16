@@ -10,11 +10,11 @@ namespace Grand.Infrastructure.Caching;
 /// <summary>
 ///     Represents a manager for memory caching
 /// </summary>
-public class MemoryCacheBase : ICacheBase
+public class MemoryCache : ICache
 {
     #region Ctor
 
-    public MemoryCacheBase(IMemoryCache cache, IMediator mediator, CacheConfig cacheConfig)
+    public MemoryCache(IMemoryCache cache, IMediator mediator, CacheConfig cacheConfig)
     {
         _cache = cache;
         _mediator = mediator;
@@ -148,7 +148,7 @@ public class MemoryCacheBase : ICacheBase
         return Task.CompletedTask;
     }
 
-    ~MemoryCacheBase()
+    ~MemoryCache()
     {
         Dispose(false);
     }

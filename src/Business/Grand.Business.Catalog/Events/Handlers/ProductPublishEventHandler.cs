@@ -7,16 +7,16 @@ namespace Grand.Business.Catalog.Events.Handlers;
 
 public class ProductPublishEventHandler : INotificationHandler<ProductPublishEvent>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
-    public ProductPublishEventHandler(ICacheBase cacheBase)
+    public ProductPublishEventHandler(ICache cache)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public async Task Handle(ProductPublishEvent notification, CancellationToken cancellationToken)
     {
         if (notification.Product.ShowOnHomePage)
-            await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_SHOWONHOMEPAGE);
+            await _cache.RemoveByPrefix(CacheKey.PRODUCTS_SHOWONHOMEPAGE);
     }
 }

@@ -26,11 +26,11 @@ public class CustomerService : ICustomerService
     public CustomerService(
         IRepository<Customer> customerRepository,
         IMediator mediator,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _customerRepository = customerRepository;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -39,7 +39,7 @@ public class CustomerService : ICustomerService
 
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -241,7 +241,7 @@ public class CustomerService : ICustomerService
 
         var key = string.Format(CacheKey.CUSTOMER_BY_SYSTEMNAME_BY_KEY, systemName);
 
-        return _cacheBase.GetAsync(key, () => _customerRepository.GetOneAsync(x => x.SystemName == systemName));
+        return _cache.GetAsync(key, () => _customerRepository.GetOneAsync(x => x.SystemName == systemName));
     }
 
     /// <summary>
@@ -249,7 +249,7 @@ public class CustomerService : ICustomerService
     /// </summary>
     /// <param name="username">Username</param>
     /// <returns>Customer</returns>
-    public virtual async Task<Customer> GetCustomerByUsername(string username)
+    public virtual async Task<Customer> GetCustomerByName(string username)
     {
         if (string.IsNullOrWhiteSpace(username))
             return null;

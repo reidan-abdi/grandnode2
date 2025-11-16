@@ -28,14 +28,14 @@ public class PictureService : IPictureService
     /// <param name="pictureRepository">Picture repository</param>
     /// <param name="logger">Logger</param>
     /// <param name="mediator">Mediator</param>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="mediaFileStore">Media file storage</param>
     /// <param name="mediaSettings">Media settings</param>
     /// <param name="storageSettings">Storage settings</param>
     public PictureService(IRepository<Picture> pictureRepository,
         ILogger<PictureService> logger,
         IMediator mediator,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediaFileStore mediaFileStore,
         MediaSettings mediaSettings,
         StorageSettings storageSettings)
@@ -43,7 +43,7 @@ public class PictureService : IPictureService
         _pictureRepository = pictureRepository;
         _logger = logger;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediaFileStore = mediaFileStore;
         _mediaSettings = mediaSettings;
         _storageSettings = storageSettings;
@@ -56,7 +56,7 @@ public class PictureService : IPictureService
     private readonly IRepository<Picture> _pictureRepository;
     private readonly ILogger<PictureService> _logger;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediaFileStore _mediaFileStore;
     private readonly MediaSettings _mediaSettings;
     private readonly StorageSettings _storageSettings;
@@ -304,7 +304,7 @@ public class PictureService : IPictureService
     {
         var pictureKey = string.Format(CacheKey.PICTURE_BY_KEY, pictureId, targetSize, showDefaultPicture,
             storeLocation);
-        return await _cacheBase.GetAsync(pictureKey, async () =>
+        return await _cache.GetAsync(pictureKey, async () =>
         {
             var picture = await GetPictureById(pictureId);
             return await GetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation);
@@ -422,7 +422,7 @@ public class PictureService : IPictureService
     public virtual async Task<Picture> GetPictureById(string pictureId)
     {
         var pictureKey = string.Format(CacheKey.PICTURE_BY_ID, pictureId);
-        return await _cacheBase.GetAsync(pictureKey, async () =>
+        return await _cache.GetAsync(pictureKey, async () =>
         {
             var query = _pictureRepository.Table
                 .Where(p => p.Id == pictureId)
@@ -634,7 +634,7 @@ public class PictureService : IPictureService
         await _mediator.EntityUpdated(picture);
 
         //clare cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PICTURE_BY_ID, picture.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PICTURE_BY_ID, picture.Id));
 
         return picture;
     }
@@ -654,7 +654,7 @@ public class PictureService : IPictureService
         await _mediator.EntityUpdated(picture);
 
         //clare cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PICTURE_BY_ID, picture.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PICTURE_BY_ID, picture.Id));
 
         return picture;
     }
@@ -676,7 +676,7 @@ public class PictureService : IPictureService
         await _mediator.EntityUpdated(picture);
 
         //clare cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PICTURE_BY_ID, picture.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PICTURE_BY_ID, picture.Id));
     }
 
     /// <summary>
@@ -724,7 +724,7 @@ public class PictureService : IPictureService
         await _mediator.EntityUpdated(picture);
 
         //clare cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PICTURE_BY_ID, picture.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PICTURE_BY_ID, picture.Id));
         return picture;
     }
 

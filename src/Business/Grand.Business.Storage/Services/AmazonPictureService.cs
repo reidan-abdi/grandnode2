@@ -24,7 +24,7 @@ public class AmazonPictureService : PictureService
     public AmazonPictureService(IRepository<Picture> pictureRepository,
         ILogger<AmazonPictureService> logger,
         IMediator mediator,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediaFileStore mediaFileStore,
         MediaSettings mediaSettings,
         StorageSettings storageSettings,
@@ -32,7 +32,7 @@ public class AmazonPictureService : PictureService
         : base(pictureRepository,
             logger,
             mediator,
-            cacheBase,
+            cache,
             mediaFileStore,
             mediaSettings,
             storageSettings)

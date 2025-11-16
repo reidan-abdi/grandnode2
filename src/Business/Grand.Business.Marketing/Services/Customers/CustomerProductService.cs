@@ -14,7 +14,7 @@ namespace Grand.Business.Marketing.Services.Customers;
 /// </summary>
 public class CustomerProductService : ICustomerProductService
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     private readonly IRepository<CustomerProductPrice> _customerProductPriceRepository;
     private readonly IRepository<CustomerProduct> _customerProductRepository;
@@ -23,10 +23,10 @@ public class CustomerProductService : ICustomerProductService
     public CustomerProductService(
         IRepository<CustomerProductPrice> customerProductPriceRepository,
         IRepository<CustomerProduct> customerProductRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _customerProductPriceRepository = customerProductPriceRepository;
         _customerProductRepository = customerProductRepository;
         _mediator = mediator;
@@ -53,7 +53,7 @@ public class CustomerProductService : ICustomerProductService
     public virtual async Task<double?> GetPriceByCustomerProduct(string customerId, string productId)
     {
         var key = string.Format(CacheKey.CUSTOMER_PRODUCT_PRICE_KEY_ID, customerId, productId);
-        var productPrice = await _cacheBase.GetAsync(key, async () =>
+        var productPrice = await _cache.GetAsync(key, async () =>
         {
             var pp = await Task.FromResult(
                 _customerProductPriceRepository.Table.FirstOrDefault(x =>
@@ -77,7 +77,7 @@ public class CustomerProductService : ICustomerProductService
         await _customerProductPriceRepository.InsertAsync(customerProductPrice);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.CUSTOMER_PRODUCT_PRICE_KEY_ID,
+        await _cache.RemoveAsync(string.Format(CacheKey.CUSTOMER_PRODUCT_PRICE_KEY_ID,
             customerProductPrice.CustomerId, customerProductPrice.ProductId));
 
         //event notification
@@ -95,7 +95,7 @@ public class CustomerProductService : ICustomerProductService
         await _customerProductPriceRepository.UpdateAsync(customerProductPrice);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.CUSTOMER_PRODUCT_PRICE_KEY_ID,
+        await _cache.RemoveAsync(string.Format(CacheKey.CUSTOMER_PRODUCT_PRICE_KEY_ID,
             customerProductPrice.CustomerId, customerProductPrice.ProductId));
 
         //event notification
@@ -113,7 +113,7 @@ public class CustomerProductService : ICustomerProductService
         await _customerProductPriceRepository.DeleteAsync(customerProductPrice);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.CUSTOMER_PRODUCT_PRICE_KEY_ID,
+        await _cache.RemoveAsync(string.Format(CacheKey.CUSTOMER_PRODUCT_PRICE_KEY_ID,
             customerProductPrice.CustomerId, customerProductPrice.ProductId));
 
         //event notification
@@ -169,7 +169,7 @@ public class CustomerProductService : ICustomerProductService
         await _customerProductRepository.InsertAsync(customerProduct);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_KEY,
+        await _cache.RemoveAsync(string.Format(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_KEY,
             customerProduct.CustomerId));
 
         //event notification
@@ -187,7 +187,7 @@ public class CustomerProductService : ICustomerProductService
         await _customerProductRepository.UpdateAsync(customerProduct);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_KEY,
+        await _cache.RemoveAsync(string.Format(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_KEY,
             customerProduct.CustomerId));
 
         //event notification
@@ -205,7 +205,7 @@ public class CustomerProductService : ICustomerProductService
         await _customerProductRepository.DeleteAsync(customerProduct);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_KEY,
+        await _cache.RemoveAsync(string.Format(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_KEY,
             customerProduct.CustomerId));
 
         //event notification

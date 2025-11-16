@@ -26,14 +26,14 @@ public class ProductService : IProductService
     /// <summary>
     ///     Ctor
     /// </summary>
-    public ProductService(ICacheBase cacheBase,
+    public ProductService(ICache cache,
         IRepository<Product> productRepository,
         IWorkContext workContext,
         IMediator mediator,
         IAclService aclService
     )
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _productRepository = productRepository;
         _workContext = workContext;
         _mediator = mediator;
@@ -45,7 +45,7 @@ public class ProductService : IProductService
     #region Fields
 
     private readonly IRepository<Product> _productRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IWorkContext _workContext;
     private readonly IAclService _aclService;
     private readonly IMediator _mediator;
@@ -98,7 +98,7 @@ public class ProductService : IProductService
             return await _productRepository.GetByIdAsync(productId);
 
         var key = string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId);
-        return await _cacheBase.GetAsync(key, () => _productRepository.GetByIdAsync(productId));
+        return await _cache.GetAsync(key, () => _productRepository.GetByIdAsync(productId));
     }
 
     /// <summary>
@@ -169,7 +169,7 @@ public class ProductService : IProductService
         await _productRepository.InsertAsync(product);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(product);
@@ -326,12 +326,12 @@ public class ProductService : IProductService
         }
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_PATTERN);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_GROUP_PATTERN);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_HOMEPAGE_PATTERN);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_TAG_PATTERN);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_PERSONAL_PATTERN);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_GROUP_PATTERN);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_HOMEPAGE_PATTERN);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_TAG_PATTERN);
 
         //event notification
         await _mediator.EntityUpdated(product);
@@ -346,7 +346,7 @@ public class ProductService : IProductService
         await _productRepository.UpdateField(product.Id, expression, value);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(product);
@@ -382,7 +382,7 @@ public class ProductService : IProductService
         await _productRepository.DeleteAsync(product);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(product);
@@ -396,7 +396,7 @@ public class ProductService : IProductService
 
         await _productRepository.UpdateOneAsync(x => x.Id == product.Id, update);
 
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
         //event
         await _mediator.Publish(new ProductUnPublishEvent(product));
@@ -641,7 +641,7 @@ public class ProductService : IProductService
         await _productRepository.UpdateManyAsync(x => x.Id == product.Id, update);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, product.Id));
 
         //event notification
         await _mediator.EntityUpdated(product);
@@ -663,7 +663,7 @@ public class ProductService : IProductService
         await _productRepository.AddToSet(productId, x => x.RelatedProducts, relatedProduct);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityInserted(relatedProduct);
@@ -681,7 +681,7 @@ public class ProductService : IProductService
         await _productRepository.PullFilter(productId, x => x.RelatedProducts, z => z.Id, relatedProduct.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityDeleted(relatedProduct);
@@ -700,7 +700,7 @@ public class ProductService : IProductService
             relatedProduct);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityUpdated(relatedProduct);
@@ -717,7 +717,7 @@ public class ProductService : IProductService
         await _productRepository.AddToSet(similarProduct.ProductId1, x => x.SimilarProducts, similarProduct);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, similarProduct.ProductId1));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, similarProduct.ProductId1));
 
         //event notification
         await _mediator.EntityInserted(similarProduct);
@@ -735,7 +735,7 @@ public class ProductService : IProductService
             similarProduct.Id, similarProduct);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, similarProduct.ProductId1));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, similarProduct.ProductId1));
 
         //event notification
         await _mediator.EntityUpdated(similarProduct);
@@ -753,7 +753,7 @@ public class ProductService : IProductService
             similarProduct.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, similarProduct.ProductId1));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, similarProduct.ProductId1));
 
         //event notification
         await _mediator.EntityDeleted(similarProduct);
@@ -775,7 +775,7 @@ public class ProductService : IProductService
         await _productRepository.AddToSet(productBundleId, x => x.BundleProducts, bundleProduct);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productBundleId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productBundleId));
 
         //event notification
         await _mediator.EntityInserted(bundleProduct);
@@ -794,7 +794,7 @@ public class ProductService : IProductService
             bundleProduct);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productBundleId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productBundleId));
 
         //event notification
         await _mediator.EntityUpdated(bundleProduct);
@@ -812,7 +812,7 @@ public class ProductService : IProductService
         await _productRepository.PullFilter(productBundleId, x => x.BundleProducts, z => z.Id, bundleProduct.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productBundleId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productBundleId));
 
         //event notification
         await _mediator.EntityDeleted(bundleProduct);
@@ -834,7 +834,7 @@ public class ProductService : IProductService
             crossSellProduct.ProductId2);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, crossSellProduct.ProductId1));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, crossSellProduct.ProductId1));
 
         //event notification
         await _mediator.EntityInserted(crossSellProduct);
@@ -852,7 +852,7 @@ public class ProductService : IProductService
             crossSellProduct.ProductId2);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, crossSellProduct.ProductId1));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, crossSellProduct.ProductId1));
 
         //event notification
         await _mediator.EntityDeleted(crossSellProduct);
@@ -927,7 +927,7 @@ public class ProductService : IProductService
         await _productRepository.AddToSet(productId, x => x.RecommendedProduct, recommendedProductId);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
     }
 
     /// <summary>
@@ -943,7 +943,7 @@ public class ProductService : IProductService
         await _productRepository.Pull(productId, x => x.RecommendedProduct, recommendedProductId);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
     }
 
     #endregion
@@ -962,7 +962,7 @@ public class ProductService : IProductService
         await _productRepository.AddToSet(productId, x => x.TierPrices, tierPrice);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityInserted(tierPrice);
@@ -980,7 +980,7 @@ public class ProductService : IProductService
         await _productRepository.UpdateToSet(productId, x => x.TierPrices, z => z.Id, tierPrice.Id, tierPrice);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityUpdated(tierPrice);
@@ -998,7 +998,7 @@ public class ProductService : IProductService
         await _productRepository.PullFilter(productId, x => x.TierPrices, x => x.Id, tierPrice.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityDeleted(tierPrice);
@@ -1019,7 +1019,7 @@ public class ProductService : IProductService
         await _productRepository.AddToSet(productPrice.ProductId, x => x.ProductPrices, productPrice);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productPrice.ProductId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productPrice.ProductId));
 
         //event notification
         await _mediator.EntityInserted(productPrice);
@@ -1037,7 +1037,7 @@ public class ProductService : IProductService
             productPrice);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productPrice.ProductId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productPrice.ProductId));
 
         //event notification
         await _mediator.EntityUpdated(productPrice);
@@ -1054,7 +1054,7 @@ public class ProductService : IProductService
         await _productRepository.PullFilter(productPrice.ProductId, x => x.ProductPrices, x => x.Id, productPrice.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productPrice.ProductId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productPrice.ProductId));
 
         //event notification
         await _mediator.EntityDeleted(productPrice);
@@ -1076,7 +1076,7 @@ public class ProductService : IProductService
         await _productRepository.AddToSet(productId, x => x.ProductPictures, productPicture);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityInserted(productPicture);
@@ -1095,7 +1095,7 @@ public class ProductService : IProductService
             productPicture);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityUpdated(productPicture);
@@ -1113,7 +1113,7 @@ public class ProductService : IProductService
         await _productRepository.PullFilter(productId, x => x.ProductPictures, x => x.Id, productPicture.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityDeleted(productPicture);
@@ -1136,7 +1136,7 @@ public class ProductService : IProductService
         await _productRepository.AddToSet(productId, x => x.ProductWarehouseInventory, pwi);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityInserted(pwi);
@@ -1155,7 +1155,7 @@ public class ProductService : IProductService
         await _productRepository.UpdateToSet(productId, x => x.ProductWarehouseInventory, z => z.Id, pwi.Id, pwi);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
         //event notification
         await _mediator.EntityUpdated(pwi);
     }
@@ -1172,7 +1172,7 @@ public class ProductService : IProductService
         await _productRepository.PullFilter(productId, x => x.ProductWarehouseInventory, x => x.Id, pwi.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
     }
 
     #endregion
@@ -1187,7 +1187,7 @@ public class ProductService : IProductService
         await _productRepository.Pull(productId, x => x.AppliedDiscounts, discountId);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
     }
 
     public virtual async Task InsertDiscount(string discountId, string productId)
@@ -1197,7 +1197,7 @@ public class ProductService : IProductService
 
         await _productRepository.AddToSet(productId, x => x.AppliedDiscounts, discountId);
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
     }
 
     #endregion

@@ -12,14 +12,14 @@ namespace Grand.Web.Features.Handlers.Blogs;
 public class GetBlogPostCategoryHandler : IRequestHandler<GetBlogPostCategory, IList<BlogPostCategoryModel>>
 {
     private readonly IBlogService _blogService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IWorkContext _workContext;
 
-    public GetBlogPostCategoryHandler(IBlogService blogService, ICacheBase cacheBase,
+    public GetBlogPostCategoryHandler(IBlogService blogService, ICache cache,
         IWorkContext workContext)
     {
         _blogService = blogService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _workContext = workContext;
     }
 
@@ -28,7 +28,7 @@ public class GetBlogPostCategoryHandler : IRequestHandler<GetBlogPostCategory, I
     {
         var cacheKey = string.Format(CacheKeyConst.BLOG_CATEGORY_MODEL_KEY, _workContext.WorkingLanguage.Id,
             _workContext.CurrentStore.Id);
-        var cachedModel = await _cacheBase.GetAsync(cacheKey, async () =>
+        var cachedModel = await _cache.GetAsync(cacheKey, async () =>
         {
             var model = new List<BlogPostCategoryModel>();
             var categories = await _blogService.GetAllBlogCategories(_workContext.CurrentStore.Id);

@@ -22,13 +22,13 @@ public class MeasureController : BaseAdminController
         ISettingService settingService,
         ITranslationService translationService,
         MeasureSettings measureSettings,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _measureService = measureService;
         _settingService = settingService;
         _translationService = translationService;
         _measureSettings = measureSettings;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -39,7 +39,7 @@ public class MeasureController : BaseAdminController
     private readonly ISettingService _settingService;
     private readonly ITranslationService _translationService;
     private readonly MeasureSettings _measureSettings;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -47,7 +47,7 @@ public class MeasureController : BaseAdminController
 
     protected async Task ClearCache()
     {
-        await _cacheBase.Clear();
+        await _cache.Clear();
     }
 
     public IActionResult Index()

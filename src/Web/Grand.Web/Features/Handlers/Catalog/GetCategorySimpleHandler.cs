@@ -17,7 +17,7 @@ namespace Grand.Web.Features.Handlers.Catalog;
 public class GetCategorySimpleHandler : IRequestHandler<GetCategorySimple, IList<CategorySimpleModel>>
 {
     private readonly AccessControlConfig _accessControlConfig;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CatalogSettings _catalogSettings;
     private readonly ICategoryService _categoryService;
     private readonly MediaSettings _mediaSettings;
@@ -26,7 +26,7 @@ public class GetCategorySimpleHandler : IRequestHandler<GetCategorySimple, IList
     private readonly IProductService _productService;
 
     public GetCategorySimpleHandler(
-        ICacheBase cacheBase,
+        ICache cache,
         ICategoryService categoryService,
         IPictureService pictureService,
         IProductService productService,
@@ -35,7 +35,7 @@ public class GetCategorySimpleHandler : IRequestHandler<GetCategorySimple, IList
         CatalogSettings catalogSettings,
         AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _categoryService = categoryService;
         _pictureService = pictureService;
         _productService = productService;
@@ -59,7 +59,7 @@ public class GetCategorySimpleHandler : IRequestHandler<GetCategorySimple, IList
             string.Join(",", request.Customer.GetCustomerGroupIds()),
             request.CurrentCategoryId);
 
-        return await _cacheBase.GetAsync(cacheKey, async () =>
+        return await _cache.GetAsync(cacheKey, async () =>
         {
             var categories = new List<Category>();
 

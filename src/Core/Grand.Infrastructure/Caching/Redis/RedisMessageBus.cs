@@ -61,7 +61,7 @@ public sealed class RedisMessageBus : IMessageBus
     public void OnSubscriptionChanged(IMessageEvent message)
     {
         using var scope = _serviceProvider.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheBase>();
+        var cache = scope.ServiceProvider.GetRequiredService<ICache>();
         switch (message.MessageType)
         {
             case (int)MessageEventType.RemoveKey:

@@ -22,7 +22,7 @@ public class GetMenuHandler : IRequestHandler<GetMenu, MenuModel>
 {
     private readonly BlogSettings _blogSettings;
     private readonly IBrandService _brandService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CatalogSettings _catalogSettings;
     private readonly ICategoryService _categoryService;
     private readonly ICollectionService _collectionService;
@@ -35,7 +35,7 @@ public class GetMenuHandler : IRequestHandler<GetMenu, MenuModel>
         ICategoryService categoryService,
         IBrandService brandService,
         IPageService pageService,
-        ICacheBase cacheBase,
+        ICache cache,
         ICollectionService collectionService,
         IPictureService pictureService,
         CatalogSettings catalogSettings,
@@ -46,7 +46,7 @@ public class GetMenuHandler : IRequestHandler<GetMenu, MenuModel>
         _categoryService = categoryService;
         _brandService = brandService;
         _pageService = pageService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _collectionService = collectionService;
         _pictureService = pictureService;
         _catalogSettings = catalogSettings;
@@ -60,7 +60,7 @@ public class GetMenuHandler : IRequestHandler<GetMenu, MenuModel>
         var cacheKey = string.Format(CacheKeyConst.CATEGORIES_BY_MENU,
             request.Language.Id,
             request.Store.Id, string.Join(",", request.Customer.GetCustomerGroupIds()));
-        var cachedCategoriesModel = await _cacheBase.GetAsync(cacheKey, async () => await PrepareCategorySimpleModels(
+        var cachedCategoriesModel = await _cache.GetAsync(cacheKey, async () => await PrepareCategorySimpleModels(
             request.Language,
             await _categoryService.GetMenuCategories()));
 
@@ -78,7 +78,7 @@ public class GetMenuHandler : IRequestHandler<GetMenu, MenuModel>
         var brandCacheKey = string.Format(CacheKeyConst.BRAND_NAVIGATION_MENU,
             request.Language.Id, request.Store.Id);
 
-        var cachedBrandModel = await _cacheBase.GetAsync(brandCacheKey, async () =>
+        var cachedBrandModel = await _cache.GetAsync(brandCacheKey, async () =>
             (await _brandService.GetAllBrands(storeId: request.Store.Id))
             .Where(x => x.IncludeInMenu)
             .Select(t => new MenuModel.MenuBrandModel {
@@ -93,7 +93,7 @@ public class GetMenuHandler : IRequestHandler<GetMenu, MenuModel>
         var collectionCacheKey = string.Format(CacheKeyConst.COLLECTION_NAVIGATION_MENU,
             request.Language.Id, request.Store.Id);
 
-        var cachedCollectionModel = await _cacheBase.GetAsync(collectionCacheKey, async () =>
+        var cachedCollectionModel = await _cache.GetAsync(collectionCacheKey, async () =>
             (await _collectionService.GetAllCollections(storeId: request.Store.Id))
             .Where(x => x.IncludeInMenu)
             .Select(t => new MenuModel.MenuCollectionModel {

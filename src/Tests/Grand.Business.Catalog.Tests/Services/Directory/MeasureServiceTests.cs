@@ -12,7 +12,7 @@ namespace Grand.Business.Catalog.Tests.Services.Directory;
 [TestClass]
 public class MeasureServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IRepository<MeasureDimension>> _mdRepositoryMock;
     private MeasureService _measureService;
     private Mock<IMediator> _mediatorMock;
@@ -23,7 +23,7 @@ public class MeasureServiceTests
     [TestInitialize]
     public void Init()
     {
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _mdRepositoryMock = new Mock<IRepository<MeasureDimension>>();
         _mwRepositoryMock = new Mock<IRepository<MeasureWeight>>();
         _muRepositoryMock = new Mock<IRepository<MeasureUnit>>();

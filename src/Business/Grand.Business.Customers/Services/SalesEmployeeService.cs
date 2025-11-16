@@ -13,11 +13,11 @@ public class SalesEmployeeService : ISalesEmployeeService
     public SalesEmployeeService(
         IRepository<SalesEmployee> salesEmployeeRepository,
         IMediator mediator,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _salesEmployeeRepository = salesEmployeeRepository;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ public class SalesEmployeeService : ISalesEmployeeService
     public virtual Task<SalesEmployee> GetSalesEmployeeById(string salesEmployeeId)
     {
         var key = string.Format(CacheKey.SALESEMPLOYEE_BY_ID_KEY, salesEmployeeId);
-        return _cacheBase.GetAsync(key, () => _salesEmployeeRepository.GetByIdAsync(salesEmployeeId));
+        return _cache.GetAsync(key, () => _salesEmployeeRepository.GetByIdAsync(salesEmployeeId));
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class SalesEmployeeService : ISalesEmployeeService
     /// <returns>Warehouses</returns>
     public virtual async Task<IList<SalesEmployee>> GetAll()
     {
-        return await _cacheBase.GetAsync(CacheKey.SALESEMPLOYEE_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.SALESEMPLOYEE_ALL, async () =>
         {
             var query = from se in _salesEmployeeRepository.Table
                 orderby se.DisplayOrder
@@ -57,7 +57,7 @@ public class SalesEmployeeService : ISalesEmployeeService
         await _salesEmployeeRepository.InsertAsync(salesEmployee);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SALESEMPLOYEE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SALESEMPLOYEE_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(salesEmployee);
@@ -74,7 +74,7 @@ public class SalesEmployeeService : ISalesEmployeeService
         await _salesEmployeeRepository.UpdateAsync(salesEmployee);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SALESEMPLOYEE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SALESEMPLOYEE_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(salesEmployee);
@@ -91,7 +91,7 @@ public class SalesEmployeeService : ISalesEmployeeService
         await _salesEmployeeRepository.DeleteAsync(salesEmployee);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SALESEMPLOYEE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SALESEMPLOYEE_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(salesEmployee);
@@ -101,7 +101,7 @@ public class SalesEmployeeService : ISalesEmployeeService
 
     private readonly IRepository<SalesEmployee> _salesEmployeeRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 }

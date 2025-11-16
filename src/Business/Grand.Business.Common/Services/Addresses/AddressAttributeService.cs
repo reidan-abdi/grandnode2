@@ -18,14 +18,14 @@ public class AddressAttributeService : IAddressAttributeService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="addressAttributeRepository">Address attribute repository</param>
     /// <param name="mediator">Mediator</param>
-    public AddressAttributeService(ICacheBase cacheBase,
+    public AddressAttributeService(ICache cache,
         IRepository<AddressAttribute> addressAttributeRepository,
         IMediator mediator)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _addressAttributeRepository = addressAttributeRepository;
         _mediator = mediator;
     }
@@ -36,7 +36,7 @@ public class AddressAttributeService : IAddressAttributeService
 
     private readonly IRepository<AddressAttribute> _addressAttributeRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -49,7 +49,7 @@ public class AddressAttributeService : IAddressAttributeService
     public virtual async Task<IList<AddressAttribute>> GetAllAddressAttributes()
     {
         var key = CacheKey.ADDRESSATTRIBUTES_ALL_KEY;
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from aa in _addressAttributeRepository.Table
                 orderby aa.DisplayOrder
@@ -69,7 +69,7 @@ public class AddressAttributeService : IAddressAttributeService
             return null;
 
         var key = string.Format(CacheKey.ADDRESSATTRIBUTES_BY_ID_KEY, addressAttributeId);
-        return await _cacheBase.GetAsync(key, () => _addressAttributeRepository.GetByIdAsync(addressAttributeId));
+        return await _cache.GetAsync(key, () => _addressAttributeRepository.GetByIdAsync(addressAttributeId));
     }
 
     /// <summary>
@@ -82,8 +82,8 @@ public class AddressAttributeService : IAddressAttributeService
 
         await _addressAttributeRepository.InsertAsync(addressAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(addressAttribute);
@@ -99,8 +99,8 @@ public class AddressAttributeService : IAddressAttributeService
 
         await _addressAttributeRepository.UpdateAsync(addressAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(addressAttribute);
@@ -116,8 +116,8 @@ public class AddressAttributeService : IAddressAttributeService
 
         await _addressAttributeRepository.DeleteAsync(addressAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(addressAttribute);
@@ -134,8 +134,8 @@ public class AddressAttributeService : IAddressAttributeService
         await _addressAttributeRepository.AddToSet(addressAttributeValue.AddressAttributeId,
             x => x.AddressAttributeValues, addressAttributeValue);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(addressAttributeValue);
@@ -152,8 +152,8 @@ public class AddressAttributeService : IAddressAttributeService
         await _addressAttributeRepository.UpdateToSet(addressAttributeValue.AddressAttributeId,
             x => x.AddressAttributeValues, z => z.Id, addressAttributeValue.Id, addressAttributeValue);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(addressAttributeValue);
@@ -170,8 +170,8 @@ public class AddressAttributeService : IAddressAttributeService
         await _addressAttributeRepository.PullFilter(addressAttributeValue.AddressAttributeId,
             x => x.AddressAttributeValues, z => z.Id, addressAttributeValue.Id);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ADDRESSATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(addressAttributeValue);

@@ -10,19 +10,19 @@ namespace Grand.Business.Catalog.Events.Handlers;
 
 public class CategoryDeletedEventHandler : INotificationHandler<EntityDeleted<Category>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<EntityUrl> _entityUrlRepository;
     private readonly IRepository<Product> _productRepository;
 
     public CategoryDeletedEventHandler(
         IRepository<EntityUrl> entityUrlRepository,
         IRepository<Product> productRepository,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _entityUrlRepository = entityUrlRepository;
         _productRepository = productRepository;
 
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public async Task Handle(EntityDeleted<Category> notification, CancellationToken cancellationToken)
@@ -36,6 +36,6 @@ public class CategoryDeletedEventHandler : INotificationHandler<EntityDeleted<Ca
             notification.Entity.Id);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
     }
 }

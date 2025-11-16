@@ -14,7 +14,7 @@ namespace Grand.Business.Catalog.Tests.Services.Categories;
 [TestClass]
 public class CategoryLayoutServiceDbTest
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private CategoryLayoutService _categoryLayoutService;
     private Mock<IMediator> _mediatorMock;
     private IRepository<CategoryLayout> _repository;
@@ -25,9 +25,9 @@ public class CategoryLayoutServiceDbTest
         _repository = new MongoDBRepositoryTest<CategoryLayout>();
         _mediatorMock = new Mock<IMediator>();
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _categoryLayoutService = new CategoryLayoutService(_repository, _cacheBase, _mediatorMock.Object);
+        _categoryLayoutService = new CategoryLayoutService(_repository, _cache, _mediatorMock.Object);
     }
 
     [TestMethod]

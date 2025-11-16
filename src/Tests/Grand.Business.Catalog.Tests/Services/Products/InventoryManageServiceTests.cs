@@ -20,7 +20,7 @@ namespace Grand.Business.Catalog.Tests.Services.Products;
 [TestClass]
 public class InventoryManageServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private InventoryManageService _inventoryManageService;
     private Mock<IMediator> _mediatorMock;
     private IRepository<Product> _repository;
@@ -41,11 +41,11 @@ public class InventoryManageServiceTests
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
         _mediatorMock = new Mock<IMediator>();
         _settings = new CatalogSettings();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
         _stockQuantityService = new StockQuantityService();
         _inventoryManageService = new InventoryManageService(_repository, _repositoryInventoryJournal,
-            _stockQuantityService, _cacheBase, _mediatorMock.Object, _settings);
+            _stockQuantityService, _cache, _mediatorMock.Object, _settings);
     }
 
 

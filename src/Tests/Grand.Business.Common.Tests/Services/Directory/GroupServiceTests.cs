@@ -14,7 +14,7 @@ namespace Grand.Business.Common.Tests.Services.Directory;
 [TestClass]
 public class GroupServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
 
     private GroupService _groupService;
     private Mock<IMediator> _mediatorMock;
@@ -26,9 +26,9 @@ public class GroupServiceTests
         _repository = new MongoDBRepositoryTest<CustomerGroup>();
 
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _groupService = new GroupService(_repository, _cacheBase, _mediatorMock.Object);
+        _groupService = new GroupService(_repository, _cache, _mediatorMock.Object);
     }
 
 

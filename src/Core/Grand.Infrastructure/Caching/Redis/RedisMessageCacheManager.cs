@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Grand.Infrastructure.Caching.Redis;
 
-public class RedisMessageCacheManager : MemoryCacheBase, ICacheBase
+public class RedisMessageCacheManager : MemoryCache, ICache
 {
     private readonly IMemoryCache _cache;
     private readonly IMessageBus _messageBus;

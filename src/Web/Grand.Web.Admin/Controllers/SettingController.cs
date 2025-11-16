@@ -55,7 +55,7 @@ public class SettingController(
     IMerchandiseReturnService merchandiseReturnService,
     ILanguageService languageService,
     IOrderStatusService orderStatusService,
-    ICacheBase cacheBase,
+    ICache cache,
     IEnumTranslationService enumTranslationService)
     : BaseAdminController
 {
@@ -63,7 +63,7 @@ public class SettingController(
 
     protected async Task ClearCache()
     {
-        await cacheBase.Clear();
+        await cache.Clear();
     }
 
     public async Task<IActionResult> Content()

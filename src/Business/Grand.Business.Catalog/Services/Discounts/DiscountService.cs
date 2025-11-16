@@ -25,13 +25,13 @@ public class DiscountService : IDiscountService
     /// <summary>
     ///     Ctor
     /// </summary>
-    public DiscountService(ICacheBase cacheBase,
+    public DiscountService(ICache cache,
         IRepository<Discount> discountRepository,
         IRepository<DiscountCoupon> discountCouponRepository,
         IRepository<DiscountUsageHistory> discountUsageHistoryRepository,
         IMediator mediator, AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _discountRepository = discountRepository;
         _discountCouponRepository = discountCouponRepository;
         _discountUsageHistoryRepository = discountUsageHistoryRepository;
@@ -46,7 +46,7 @@ public class DiscountService : IDiscountService
     private readonly IRepository<Discount> _discountRepository;
     private readonly IRepository<DiscountCoupon> _discountCouponRepository;
     private readonly IRepository<DiscountUsageHistory> _discountUsageHistoryRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
     private readonly AccessControlConfig _accessControlConfig;
 
@@ -62,7 +62,7 @@ public class DiscountService : IDiscountService
     public virtual Task<Discount> GetDiscountById(string discountId)
     {
         var key = string.Format(CacheKey.DISCOUNTS_BY_ID_KEY, discountId);
-        return _cacheBase.GetAsync(key, () => _discountRepository.GetByIdAsync(discountId));
+        return _cache.GetAsync(key, () => _discountRepository.GetByIdAsync(discountId));
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class DiscountService : IDiscountService
         string storeId = "", string currencyCode = "")
     {
         var key = string.Format(CacheKey.DISCOUNTS_CONTEXT_KEY, discountType, storeId, currencyCode);
-        var allDiscounts = await _cacheBase.GetAsync(key, () => GetDiscountsQuery(discountType, storeId, currencyCode));
+        var allDiscounts = await _cache.GetAsync(key, () => GetDiscountsQuery(discountType, storeId, currencyCode));
 
         var nowUtc = DateTime.UtcNow;
         var filteredDiscounts =
@@ -128,7 +128,7 @@ public class DiscountService : IDiscountService
 
         await _discountRepository.InsertAsync(discount);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(discount);
@@ -144,7 +144,7 @@ public class DiscountService : IDiscountService
 
         await _discountRepository.UpdateAsync(discount);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(discount);
@@ -160,7 +160,7 @@ public class DiscountService : IDiscountService
 
         await _discountRepository.DeleteAsync(discount);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(discount);
@@ -236,7 +236,7 @@ public class DiscountService : IDiscountService
         await _discountCouponRepository.DeleteAsync(coupon);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
     }
 
     /// <summary>
@@ -248,7 +248,7 @@ public class DiscountService : IDiscountService
         await _discountCouponRepository.InsertAsync(coupon);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
     }
 
     /// <summary>
@@ -318,7 +318,7 @@ public class DiscountService : IDiscountService
         //Support for coupon code
         await DiscountCouponSetAsUsed(discountUsageHistory.CouponCode, true);
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
         //event notification
         await _mediator.EntityInserted(discountUsageHistory);
     }
@@ -334,7 +334,7 @@ public class DiscountService : IDiscountService
 
         await _discountUsageHistoryRepository.UpdateAsync(discountUsageHistory);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(discountUsageHistory);
@@ -350,7 +350,7 @@ public class DiscountService : IDiscountService
 
         await _discountUsageHistoryRepository.DeleteAsync(discountUsageHistory);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DISCOUNTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(discountUsageHistory);

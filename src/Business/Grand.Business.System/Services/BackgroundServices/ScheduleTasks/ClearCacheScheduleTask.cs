@@ -8,11 +8,11 @@ namespace Grand.Business.System.Services.BackgroundServices.ScheduleTasks;
 /// </summary>
 public class ClearCacheScheduleTask : IScheduleTask
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
-    public ClearCacheScheduleTask(ICacheBase cacheBase)
+    public ClearCacheScheduleTask(ICache cache)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     /// <summary>
@@ -20,6 +20,6 @@ public class ClearCacheScheduleTask : IScheduleTask
     /// </summary>
     public async Task Execute()
     {
-        await _cacheBase.Clear();
+        await _cache.Clear();
     }
 }

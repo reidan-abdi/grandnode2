@@ -10,7 +10,7 @@ namespace Tax.CountryStateZip;
 
 public class CountryStateZipTaxProvider : ITaxProvider
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     private readonly CountryStateZipTaxSettings _countryStateZipTaxSettings;
     private readonly ITaxRateService _taxRateService;
@@ -19,13 +19,13 @@ public class CountryStateZipTaxProvider : ITaxProvider
 
 
     public CountryStateZipTaxProvider(ITranslationService translationService,
-        ICacheBase cacheBase,
+        ICache cache,
         IWorkContext workContext,
         ITaxRateService taxRateService,
         CountryStateZipTaxSettings countryStateZipTaxSettings)
     {
         _translationService = translationService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _workContext = workContext;
         _taxRateService = taxRateService;
         _countryStateZipTaxSettings = countryStateZipTaxSettings;
@@ -60,7 +60,7 @@ public class CountryStateZipTaxProvider : ITaxProvider
         }
 
         const string cacheKey = ModelCacheEventConsumer.ALL_TAX_RATES_MODEL_KEY;
-        var allTaxRates = await _cacheBase.GetAsync(cacheKey, async () =>
+        var allTaxRates = await _cache.GetAsync(cacheKey, async () =>
         {
             var taxes = await _taxRateService.GetAllTaxRates();
             return taxes.Select(x => new TaxRateForCaching {

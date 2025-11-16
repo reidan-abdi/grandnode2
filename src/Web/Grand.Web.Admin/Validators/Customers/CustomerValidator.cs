@@ -187,7 +187,7 @@ public class CustomerValidator : BaseGrandValidator<CustomerModel>
 
                     if (!string.IsNullOrWhiteSpace(x.Username) & customerSettings.UsernamesEnabled)
                     {
-                        var customerByUsername = await customerService.GetCustomerByUsername(x.Username);
+                        var customerByUsername = await customerService.GetCustomerByName(x.Username);
                         if (customerByUsername != null)
                             context.AddFailure("Username is already registered");
 
@@ -255,7 +255,7 @@ public class CustomerValidator : BaseGrandValidator<CustomerModel>
                         if (x.Username.Length > 100)
                             context.AddFailure("Username is too long");
 
-                        var user2 = await customerService.GetCustomerByUsername(x.Username);
+                        var user2 = await customerService.GetCustomerByName(x.Username);
                         if (user2 != null && customer.Id != user2.Id)
                             context.AddFailure("The username is already in use");
                     }

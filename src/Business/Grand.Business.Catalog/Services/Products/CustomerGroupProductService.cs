@@ -10,17 +10,17 @@ namespace Grand.Business.Catalog.Services.Products;
 
 public class CustomerGroupProductService : ICustomerGroupProductService
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<CustomerGroupProduct> _customerGroupProductRepository;
     private readonly IMediator _mediator;
 
 
     public CustomerGroupProductService(IRepository<CustomerGroupProduct> customerGroupProductRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _customerGroupProductRepository = customerGroupProductRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -37,9 +37,9 @@ public class CustomerGroupProductService : ICustomerGroupProductService
         await _customerGroupProductRepository.DeleteAsync(customerGroupProduct);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.CUSTOMERGROUPSPRODUCTS_ROLE_KEY,
+        await _cache.RemoveAsync(string.Format(CacheKey.CUSTOMERGROUPSPRODUCTS_ROLE_KEY,
             customerGroupProduct.CustomerGroupId));
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_GROUP_PATTERN);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_GROUP_PATTERN);
 
         //event notification
         await _mediator.EntityDeleted(customerGroupProduct);
@@ -57,9 +57,9 @@ public class CustomerGroupProductService : ICustomerGroupProductService
         await _customerGroupProductRepository.InsertAsync(customerGroupProduct);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.CUSTOMERGROUPSPRODUCTS_ROLE_KEY,
+        await _cache.RemoveAsync(string.Format(CacheKey.CUSTOMERGROUPSPRODUCTS_ROLE_KEY,
             customerGroupProduct.CustomerGroupId));
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_GROUP_PATTERN);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_GROUP_PATTERN);
 
         //event notification
         await _mediator.EntityInserted(customerGroupProduct);
@@ -76,9 +76,9 @@ public class CustomerGroupProductService : ICustomerGroupProductService
         await _customerGroupProductRepository.UpdateAsync(customerGroupProduct);
 
         //clear cache
-        await _cacheBase.RemoveAsync(string.Format(CacheKey.CUSTOMERGROUPSPRODUCTS_ROLE_KEY,
+        await _cache.RemoveAsync(string.Format(CacheKey.CUSTOMERGROUPSPRODUCTS_ROLE_KEY,
             customerGroupProduct.CustomerGroupId));
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_GROUP_PATTERN);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_CUSTOMER_GROUP_PATTERN);
 
         //event notification
         await _mediator.EntityUpdated(customerGroupProduct);
@@ -93,7 +93,7 @@ public class CustomerGroupProductService : ICustomerGroupProductService
     public virtual async Task<IList<CustomerGroupProduct>> GetCustomerGroupProducts(string customerGroupId)
     {
         var key = string.Format(CacheKey.CUSTOMERGROUPSPRODUCTS_ROLE_KEY, customerGroupId);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             return await Task.FromResult(_customerGroupProductRepository
                 .Table.Where(x => x.CustomerGroupId == customerGroupId)

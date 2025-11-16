@@ -13,7 +13,7 @@ namespace Grand.Business.Checkout.Tests.Services.Shipping;
 [TestClass]
 public class DeliveryDateServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<DeliveryDate>> _repositoryMock;
     private IDeliveryDateService _service;
@@ -23,7 +23,7 @@ public class DeliveryDateServiceTests
     {
         _repositoryMock = new Mock<IRepository<DeliveryDate>>();
         _mediatorMock = new Mock<IMediator>();
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _service = new DeliveryDateService(_repositoryMock.Object, _mediatorMock.Object, _cacheMock.Object);
     }
 

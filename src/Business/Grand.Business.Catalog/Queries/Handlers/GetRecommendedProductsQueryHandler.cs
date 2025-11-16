@@ -11,24 +11,24 @@ namespace Grand.Business.Catalog.Queries.Handlers;
 
 public class GetRecommendedProductsQueryHandler : IRequestHandler<GetRecommendedProductsQuery, IList<Product>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<CustomerGroupProduct> _customerGroupProductRepository;
 
     private readonly IProductService _productService;
 
     public GetRecommendedProductsQueryHandler(
         IProductService productService,
-        ICacheBase cacheBase,
+        ICache cache,
         IRepository<CustomerGroupProduct> customerGroupProductRepository)
     {
         _productService = productService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _customerGroupProductRepository = customerGroupProductRepository;
     }
 
     public async Task<IList<Product>> Handle(GetRecommendedProductsQuery request, CancellationToken cancellationToken)
     {
-        return await _cacheBase.GetAsync(
+        return await _cache.GetAsync(
             string.Format(CacheKey.PRODUCTS_CUSTOMER_GROUP, string.Join(",", request.CustomerGroupIds),
                 request.StoreId), async () =>
             {

@@ -13,7 +13,7 @@ namespace Grand.Business.Messages.Tests.Services;
 [TestClass]
 public class EmailAccountServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<EmailAccount>> _repository;
     private EmailAccountService _service;
@@ -21,7 +21,7 @@ public class EmailAccountServiceTests
     [TestInitialize]
     public void Init()
     {
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _mediatorMock = new Mock<IMediator>();
         _repository = new Mock<IRepository<EmailAccount>>();
         _service = new EmailAccountService(_repository.Object, _cacheMock.Object, _mediatorMock.Object);

@@ -17,10 +17,10 @@ public class SlugService : ISlugService
     /// <summary>
     ///     Ctor
     /// </summary>
-    public SlugService(ICacheBase cacheBase,
+    public SlugService(ICache cache,
         IRepository<EntityUrl> urlEntityRepository)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _urlEntityRepository = urlEntityRepository;
     }
 
@@ -29,7 +29,7 @@ public class SlugService : ISlugService
     #region Fields
 
     private readonly IRepository<EntityUrl> _urlEntityRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -56,7 +56,7 @@ public class SlugService : ISlugService
         await _urlEntityRepository.InsertAsync(urlEntity);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.URLEntity_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.URLEntity_PATTERN_KEY);
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public class SlugService : ISlugService
         await _urlEntityRepository.UpdateAsync(urlEntity);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.URLEntity_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.URLEntity_PATTERN_KEY);
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class SlugService : ISlugService
         await _urlEntityRepository.DeleteAsync(urlEntity);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.URLEntity_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.URLEntity_PATTERN_KEY);
     }
 
 
@@ -120,7 +120,7 @@ public class SlugService : ISlugService
         slug = slug.ToLowerInvariant();
 
         var key = string.Format(CacheKey.URLEntity_BY_SLUG_KEY, slug);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var urlEntity = await GetBySlug(slug);
             return urlEntity;
@@ -161,7 +161,7 @@ public class SlugService : ISlugService
     public virtual async Task<string> GetActiveSlug(string entityId, string entityName, string languageId)
     {
         var key = string.Format(CacheKey.URLEntity_ACTIVE_BY_ID_NAME_LANGUAGE_KEY, entityId, entityName, languageId);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var source = _urlEntityRepository.Table;
             var query = from ur in source

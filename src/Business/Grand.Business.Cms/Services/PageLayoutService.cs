@@ -19,14 +19,14 @@ public class PageLayoutService : IPageLayoutService
     ///     Ctor
     /// </summary>
     /// <param name="pageLayoutRepository">Page layout repository</param>
-    /// <param name="cacheBase">cache base</param>
+    /// <param name="cache">cache base</param>
     /// <param name="mediator">Mediator</param>
     public PageLayoutService(IRepository<PageLayout> pageLayoutRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _pageLayoutRepository = pageLayoutRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -35,7 +35,7 @@ public class PageLayoutService : IPageLayoutService
     #region Fields
 
     private readonly IRepository<PageLayout> _pageLayoutRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -48,7 +48,7 @@ public class PageLayoutService : IPageLayoutService
     /// <returns>Page layouts</returns>
     public virtual async Task<IList<PageLayout>> GetAllPageLayouts()
     {
-        return await _cacheBase.GetAsync(CacheKey.PAGE_LAYOUT_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.PAGE_LAYOUT_ALL, async () =>
         {
             var query = from pt in _pageLayoutRepository.Table
                 orderby pt.DisplayOrder
@@ -66,7 +66,7 @@ public class PageLayoutService : IPageLayoutService
     public virtual Task<PageLayout> GetPageLayoutById(string pageLayoutId)
     {
         var key = string.Format(CacheKey.PAGE_LAYOUT_BY_ID_KEY, pageLayoutId);
-        return _cacheBase.GetAsync(key, () => _pageLayoutRepository.GetByIdAsync(pageLayoutId));
+        return _cache.GetAsync(key, () => _pageLayoutRepository.GetByIdAsync(pageLayoutId));
     }
 
     /// <summary>
@@ -80,7 +80,7 @@ public class PageLayoutService : IPageLayoutService
         await _pageLayoutRepository.InsertAsync(pageLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PAGE_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PAGE_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(pageLayout);
@@ -97,7 +97,7 @@ public class PageLayoutService : IPageLayoutService
         await _pageLayoutRepository.UpdateAsync(pageLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PAGE_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PAGE_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(pageLayout);
@@ -114,7 +114,7 @@ public class PageLayoutService : IPageLayoutService
         await _pageLayoutRepository.DeleteAsync(pageLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PAGE_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PAGE_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(pageLayout);

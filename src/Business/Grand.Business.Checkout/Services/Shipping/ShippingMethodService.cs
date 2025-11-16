@@ -20,11 +20,11 @@ public class ShippingMethodService : IShippingMethodService
     public ShippingMethodService(
         IRepository<ShippingMethod> shippingMethodRepository,
         IMediator mediator,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _shippingMethodRepository = shippingMethodRepository;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -33,7 +33,7 @@ public class ShippingMethodService : IShippingMethodService
 
     private readonly IRepository<ShippingMethod> _shippingMethodRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -50,7 +50,7 @@ public class ShippingMethodService : IShippingMethodService
         await _shippingMethodRepository.DeleteAsync(shippingMethod);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SHIPPINGMETHOD_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SHIPPINGMETHOD_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(shippingMethod);
@@ -64,7 +64,7 @@ public class ShippingMethodService : IShippingMethodService
     public virtual Task<ShippingMethod> GetShippingMethodById(string shippingMethodId)
     {
         var key = string.Format(CacheKey.SHIPPINGMETHOD_BY_ID_KEY, shippingMethodId);
-        return _cacheBase.GetAsync(key, () => _shippingMethodRepository.GetByIdAsync(shippingMethodId));
+        return _cache.GetAsync(key, () => _shippingMethodRepository.GetByIdAsync(shippingMethodId));
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ public class ShippingMethodService : IShippingMethodService
     public virtual async Task<IList<ShippingMethod>> GetAllShippingMethods(string filterByCountryId = "",
         Customer customer = null)
     {
-        var shippingMethods = await _cacheBase.GetAsync(CacheKey.SHIPPINGMETHOD_ALL, async () =>
+        var shippingMethods = await _cache.GetAsync(CacheKey.SHIPPINGMETHOD_ALL, async () =>
         {
             var query = from sm in _shippingMethodRepository.Table
                 orderby sm.DisplayOrder
@@ -104,7 +104,7 @@ public class ShippingMethodService : IShippingMethodService
         await _shippingMethodRepository.InsertAsync(shippingMethod);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SHIPPINGMETHOD_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SHIPPINGMETHOD_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(shippingMethod);
@@ -121,7 +121,7 @@ public class ShippingMethodService : IShippingMethodService
         await _shippingMethodRepository.UpdateAsync(shippingMethod);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SHIPPINGMETHOD_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SHIPPINGMETHOD_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(shippingMethod);

@@ -18,14 +18,14 @@ public class CustomerAttributeService : ICustomerAttributeService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="customerAttributeRepository">Customer attribute repository</param>
     /// <param name="mediator">Mediator</param>
-    public CustomerAttributeService(ICacheBase cacheBase,
+    public CustomerAttributeService(ICache cache,
         IRepository<CustomerAttribute> customerAttributeRepository,
         IMediator mediator)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _customerAttributeRepository = customerAttributeRepository;
         _mediator = mediator;
     }
@@ -36,7 +36,7 @@ public class CustomerAttributeService : ICustomerAttributeService
 
     private readonly IRepository<CustomerAttribute> _customerAttributeRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -49,7 +49,7 @@ public class CustomerAttributeService : ICustomerAttributeService
     public virtual async Task<IList<CustomerAttribute>> GetAllCustomerAttributes()
     {
         var key = CacheKey.CUSTOMERATTRIBUTES_ALL_KEY;
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from ca in _customerAttributeRepository.Table
                 orderby ca.DisplayOrder
@@ -66,7 +66,7 @@ public class CustomerAttributeService : ICustomerAttributeService
     public virtual Task<CustomerAttribute> GetCustomerAttributeById(string customerAttributeId)
     {
         var key = string.Format(CacheKey.CUSTOMERATTRIBUTES_BY_ID_KEY, customerAttributeId);
-        return _cacheBase.GetAsync(key, () => _customerAttributeRepository.GetByIdAsync(customerAttributeId));
+        return _cache.GetAsync(key, () => _customerAttributeRepository.GetByIdAsync(customerAttributeId));
     }
 
     /// <summary>
@@ -79,8 +79,8 @@ public class CustomerAttributeService : ICustomerAttributeService
 
         await _customerAttributeRepository.InsertAsync(customerAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(customerAttribute);
@@ -96,8 +96,8 @@ public class CustomerAttributeService : ICustomerAttributeService
 
         await _customerAttributeRepository.UpdateAsync(customerAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(customerAttribute);
@@ -113,8 +113,8 @@ public class CustomerAttributeService : ICustomerAttributeService
 
         await _customerAttributeRepository.DeleteAsync(customerAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(customerAttribute);
@@ -134,8 +134,8 @@ public class CustomerAttributeService : ICustomerAttributeService
 
         await _customerAttributeRepository.UpdateAsync(ca);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(customerAttributeValue);
@@ -156,8 +156,8 @@ public class CustomerAttributeService : ICustomerAttributeService
 
         await _customerAttributeRepository.UpdateAsync(ca);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(customerAttributeValue);
@@ -176,8 +176,8 @@ public class CustomerAttributeService : ICustomerAttributeService
             ca.CustomerAttributeValues.FirstOrDefault(c => c.Id == customerAttributeValue.Id));
         await _customerAttributeRepository.UpdateAsync(ca);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(customerAttributeValue);

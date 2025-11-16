@@ -16,12 +16,12 @@ public class HomePageProductsViewComponent : BaseViewComponent
     public HomePageProductsViewComponent(
         IProductService productService,
         IMediator mediator,
-        ICacheBase cacheBase,
+        ICache cache,
         CatalogSettings catalogSettings)
     {
         _productService = productService;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _catalogSettings = catalogSettings;
     }
 
@@ -31,7 +31,7 @@ public class HomePageProductsViewComponent : BaseViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync(int? productThumbPictureSize)
     {
-        var productsIds = await _cacheBase.GetAsync(CacheKeyConst.HOMEPAGE_PRODUCTS_MODEL_KEY,
+        var productsIds = await _cache.GetAsync(CacheKeyConst.HOMEPAGE_PRODUCTS_MODEL_KEY,
             async () => await _productService.GetAllProductsDisplayedOnHomePage());
 
         var products = await _productService.GetProductsByIds(productsIds.ToArray());
@@ -56,7 +56,7 @@ public class HomePageProductsViewComponent : BaseViewComponent
 
     private readonly IProductService _productService;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CatalogSettings _catalogSettings;
 
     #endregion

@@ -26,7 +26,7 @@ public class CheckoutAttributeParserTests
     private Mock<IWorkContext> _workContextMock;
 
     private CheckoutAttribute ca1, ca2, ca3;
-    private Mock<ICacheBase> cacheManager;
+    private Mock<ICache> cacheManager;
     private CheckoutAttributeValue cav1_1, cav1_2, cav2_1, cav2_2;
 
     [TestInitialize]
@@ -118,7 +118,7 @@ public class CheckoutAttributeParserTests
             _checkoutAttributeRepo = tempCheckoutAttributeRepo.Object;
         }
 
-        cacheManager = new Mock<ICacheBase>();
+        cacheManager = new Mock<ICache>();
         _workContextMock = new Mock<IWorkContext>();
 
         _checkoutAttributeService = new CheckoutAttributeService(cacheManager.Object, _checkoutAttributeRepo,

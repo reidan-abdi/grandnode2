@@ -17,12 +17,12 @@ public class SettingService : ISettingService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="settingRepository">Setting repository</param>
-    public SettingService(ICacheBase cacheBase,
+    public SettingService(ICache cache,
         IRepository<Setting> settingRepository)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _settingRepository = settingRepository;
     }
 
@@ -48,7 +48,7 @@ public class SettingService : ISettingService
     #region Fields
 
     private readonly IRepository<Setting> _settingRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -67,7 +67,7 @@ public class SettingService : ISettingService
 
         //cache
         if (clearCache)
-            await _cacheBase.Clear();
+            await _cache.Clear();
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public class SettingService : ISettingService
 
         //cache
         if (clearCache)
-            await _cacheBase.Clear();
+            await _cache.Clear();
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public class SettingService : ISettingService
         await _settingRepository.DeleteAsync(setting);
 
         //cache
-        await _cacheBase.Clear();
+        await _cache.Clear();
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public class SettingService : ISettingService
             return defaultValue;
 
         var keyCache = string.Format(CacheKey.SETTINGS_BY_KEY, key, storeId);
-        return _cacheBase.Get(keyCache, () =>
+        return _cache.Get(keyCache, () =>
         {
             var settings = GetSettingsByName(key);
             key = key.Trim().ToLowerInvariant();
@@ -199,7 +199,7 @@ public class SettingService : ISettingService
     public virtual ISettings LoadSetting(Type type, string storeId = "")
     {
         var key = string.Format(CacheKey.SETTINGS_BY_KEY, type.Name, storeId);
-        return _cacheBase.Get(key, () =>
+        return _cache.Get(key, () =>
         {
             var settings = GetSettingsByName(type.Name);
             if (!settings.Any()) return Activator.CreateInstance(type) as ISettings;
@@ -261,7 +261,7 @@ public class SettingService : ISettingService
     /// </summary>
     public virtual async Task ClearCache()
     {
-        await _cacheBase.RemoveByPrefix(CacheKey.SETTINGS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SETTINGS_PATTERN_KEY);
     }
 
     #endregion

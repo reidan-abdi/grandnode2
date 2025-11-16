@@ -20,7 +20,7 @@ public class GetHomePageBlogHandler : IRequestHandler<GetHomePageBlog, HomePageB
     private readonly IBlogService _blogService;
 
     private readonly BlogSettings _blogSettings;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IDateTimeService _dateTimeService;
     private readonly MediaSettings _mediaSettings;
     private readonly IPictureService _pictureService;
@@ -32,7 +32,7 @@ public class GetHomePageBlogHandler : IRequestHandler<GetHomePageBlog, HomePageB
         IPictureService pictureService,
         ITranslationService translationService,
         IDateTimeService dateTimeService,
-        ICacheBase cacheBase,
+        ICache cache,
         BlogSettings blogSettings,
         MediaSettings mediaSettings)
     {
@@ -41,7 +41,7 @@ public class GetHomePageBlogHandler : IRequestHandler<GetHomePageBlog, HomePageB
         _pictureService = pictureService;
         _translationService = translationService;
         _dateTimeService = dateTimeService;
-        _cacheBase = cacheBase;
+        _cache = cache;
 
         _blogSettings = blogSettings;
         _mediaSettings = mediaSettings;
@@ -52,7 +52,7 @@ public class GetHomePageBlogHandler : IRequestHandler<GetHomePageBlog, HomePageB
         var cacheKey = string.Format(CacheKeyConst.BLOG_HOMEPAGE_MODEL_KEY,
             _workContext.WorkingLanguage.Id,
             _workContext.CurrentStore.Id);
-        var cachedModel = await _cacheBase.GetAsync(cacheKey, async () =>
+        var cachedModel = await _cache.GetAsync(cacheKey, async () =>
         {
             var model = new HomePageBlogItemsModel();
 

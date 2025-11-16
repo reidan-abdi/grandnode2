@@ -10,25 +10,25 @@ public class BlogPostNotificatioHandler :
     INotificationHandler<EntityUpdated<BlogPost>>,
     INotificationHandler<EntityDeleted<BlogPost>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
-    public BlogPostNotificatioHandler(ICacheBase cacheBase)
+    public BlogPostNotificatioHandler(ICache cache)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public async Task Handle(EntityDeleted<BlogPost> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.BLOG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.BLOG_PATTERN_KEY);
     }
 
     public async Task Handle(EntityInserted<BlogPost> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.BLOG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.BLOG_PATTERN_KEY);
     }
 
     public async Task Handle(EntityUpdated<BlogPost> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.BLOG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.BLOG_PATTERN_KEY);
     }
 }

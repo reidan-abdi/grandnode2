@@ -26,7 +26,7 @@ public class GetSitemapHandler : IRequestHandler<GetSitemap, SitemapModel>
     private readonly IBlogService _blogService;
     private readonly BlogSettings _blogSettings;
     private readonly IBrandService _brandService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly ICategoryService _categoryService;
 
     private readonly CommonSettings _commonSettings;
@@ -36,7 +36,7 @@ public class GetSitemapHandler : IRequestHandler<GetSitemap, SitemapModel>
     private readonly IPageService _pageService;
     private readonly IProductService _productService;
 
-    public GetSitemapHandler(ICacheBase cacheBase,
+    public GetSitemapHandler(ICache cache,
         ICategoryService categoryService,
         IBrandService brandService,
         IProductService productService,
@@ -48,7 +48,7 @@ public class GetSitemapHandler : IRequestHandler<GetSitemap, SitemapModel>
         NewsSettings newsSettings,
         KnowledgebaseSettings knowledgebaseSettings)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _categoryService = categoryService;
         _brandService = brandService;
         _productService = productService;
@@ -68,7 +68,7 @@ public class GetSitemapHandler : IRequestHandler<GetSitemap, SitemapModel>
             request.Language.Id,
             string.Join(",", request.Customer.GetCustomerGroupIds()),
             request.Store.Id);
-        var cachedModel = await _cacheBase.GetAsync(cacheKey, async () =>
+        var cachedModel = await _cache.GetAsync(cacheKey, async () =>
         {
             var model = new SitemapModel {
                 BlogEnabled = _blogSettings.Enabled,

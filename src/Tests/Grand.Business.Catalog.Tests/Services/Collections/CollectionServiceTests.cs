@@ -17,7 +17,7 @@ namespace Grand.Business.Catalog.Tests.Services.Collections;
 public class CollectionServiceTests
 {
     private Mock<IAclService> _aclMock;
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private ICollectionService _collectionService;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<Collection>> _repositoryMock;
@@ -27,7 +27,7 @@ public class CollectionServiceTests
     [TestInitialize]
     public void Init()
     {
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _repositoryMock = new Mock<IRepository<Collection>>();
         _workContextMock = new Mock<IWorkContext>();
         _mediatorMock = new Mock<IMediator>();

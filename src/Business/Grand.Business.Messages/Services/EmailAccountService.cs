@@ -12,7 +12,7 @@ namespace Grand.Business.Messages.Services;
 
 public class EmailAccountService : IEmailAccountService
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<EmailAccount> _emailAccountRepository;
     private readonly IMediator _mediator;
 
@@ -20,15 +20,15 @@ public class EmailAccountService : IEmailAccountService
     ///     Ctor
     /// </summary>
     /// <param name="emailAccountRepository">Email account repository</param>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="mediator">Mediator</param>
     public EmailAccountService(
         IRepository<EmailAccount> emailAccountRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _emailAccountRepository = emailAccountRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -61,7 +61,7 @@ public class EmailAccountService : IEmailAccountService
         await _emailAccountRepository.InsertAsync(emailAccount);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.EMAILACCOUNT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.EMAILACCOUNT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(emailAccount);
@@ -96,7 +96,7 @@ public class EmailAccountService : IEmailAccountService
         await _emailAccountRepository.UpdateAsync(emailAccount);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.EMAILACCOUNT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.EMAILACCOUNT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(emailAccount);
@@ -116,7 +116,7 @@ public class EmailAccountService : IEmailAccountService
         await _emailAccountRepository.DeleteAsync(emailAccount);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.EMAILACCOUNT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.EMAILACCOUNT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(emailAccount);
@@ -130,7 +130,7 @@ public class EmailAccountService : IEmailAccountService
     public virtual async Task<EmailAccount> GetEmailAccountById(string emailAccountId)
     {
         var key = string.Format(CacheKey.EMAILACCOUNT_BY_ID_KEY, emailAccountId);
-        return await _cacheBase.GetAsync(key, () => _emailAccountRepository.GetByIdAsync(emailAccountId));
+        return await _cache.GetAsync(key, () => _emailAccountRepository.GetByIdAsync(emailAccountId));
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public class EmailAccountService : IEmailAccountService
     /// <returns>Email accounts list</returns>
     public virtual async Task<IList<EmailAccount>> GetAllEmailAccounts()
     {
-        return await _cacheBase.GetAsync(CacheKey.EMAILACCOUNT_ALL_KEY, async () =>
+        return await _cache.GetAsync(CacheKey.EMAILACCOUNT_ALL_KEY, async () =>
         {
             var query = from ea in _emailAccountRepository.Table
                 select ea;

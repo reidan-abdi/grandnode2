@@ -41,7 +41,7 @@ namespace Grand.Web.Features.Handlers.Products;
 public class GetProductDetailsPageHandler : IRequestHandler<GetProductDetailsPage, ProductDetailsModel>
 {
     private readonly IBrandService _brandService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CaptchaSettings _captchaSettings;
     private readonly CatalogSettings _catalogSettings;
     private readonly ICategoryService _categoryService;
@@ -83,7 +83,7 @@ public class GetProductDetailsPageHandler : IRequestHandler<GetProductDetailsPag
         ICurrencyService currencyService,
         IPriceFormatter priceFormatter,
         IMeasureService measureService,
-        ICacheBase cacheBase,
+        ICache cache,
         IPictureService pictureService,
         IStockQuantityService stockQuantityService,
         IWarehouseService warehouseService,
@@ -115,7 +115,7 @@ public class GetProductDetailsPageHandler : IRequestHandler<GetProductDetailsPag
         _currencyService = currencyService;
         _priceFormatter = priceFormatter;
         _measureService = measureService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _pictureService = pictureService;
         _stockQuantityService = stockQuantityService;
         _warehouseService = warehouseService;
@@ -284,7 +284,7 @@ public class GetProductDetailsPageHandler : IRequestHandler<GetProductDetailsPag
             _workContext.WorkingLanguage.Id,
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
-        model.ProductCollections = await _cacheBase.GetAsync(collectionsCacheKey, async () =>
+        model.ProductCollections = await _cache.GetAsync(collectionsCacheKey, async () =>
         {
             var listCollection = new List<CollectionModel>();
             foreach (var item in product.ProductCollections.OrderBy(x => x.DisplayOrder))
@@ -508,7 +508,7 @@ public class GetProductDetailsPageHandler : IRequestHandler<GetProductDetailsPag
             _workContext.WorkingLanguage.Id,
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(breadcrumbCacheKey, async () =>
+        return await _cache.GetAsync(breadcrumbCacheKey, async () =>
         {
             var breadcrumbModel = new ProductDetailsModel.ProductBreadcrumbModel {
                 Enabled = _catalogSettings.CategoryBreadcrumbEnabled,
@@ -540,7 +540,7 @@ public class GetProductDetailsPageHandler : IRequestHandler<GetProductDetailsPag
     {
         var productTagsCacheKey = string.Format(CacheKeyConst.PRODUCTTAG_BY_PRODUCT_MODEL_KEY, product.Id,
             _workContext.WorkingLanguage.Id, _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(productTagsCacheKey, async () =>
+        return await _cache.GetAsync(productTagsCacheKey, async () =>
         {
             var tags = new List<ProductTagModel>();
             foreach (var item in product.ProductTags)

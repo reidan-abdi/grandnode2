@@ -14,7 +14,7 @@ namespace Grand.Business.Catalog.Tests.Services.Collections;
 [TestClass]
 public class CollectionLayoutServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private CollectionLayoutService _collectionLayoutService;
     private Mock<IMediator> _mediatorMock;
     private IRepository<CollectionLayout> _repository;
@@ -25,9 +25,9 @@ public class CollectionLayoutServiceTests
         _repository = new MongoDBRepositoryTest<CollectionLayout>();
         _mediatorMock = new Mock<IMediator>();
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _collectionLayoutService = new CollectionLayoutService(_repository, _cacheBase, _mediatorMock.Object);
+        _collectionLayoutService = new CollectionLayoutService(_repository, _cache, _mediatorMock.Object);
     }
 
 

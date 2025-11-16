@@ -15,7 +15,7 @@ namespace Grand.Business.Common.Tests.Services.Seo;
 [TestClass]
 public class SlugServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private IRepository<EntityUrl> _repository;
 
@@ -27,9 +27,9 @@ public class SlugServiceTests
         _repository = new MongoDBRepositoryTest<EntityUrl>();
 
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _slugService = new SlugService(_cacheBase, _repository);
+        _slugService = new SlugService(_cache, _repository);
     }
 
     [TestMethod]

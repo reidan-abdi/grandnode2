@@ -18,11 +18,11 @@ public class DeliveryDateService : IDeliveryDateService
     public DeliveryDateService(
         IRepository<DeliveryDate> deliveryDateRepository,
         IMediator mediator,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _deliveryDateRepository = deliveryDateRepository;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -31,7 +31,7 @@ public class DeliveryDateService : IDeliveryDateService
 
     private readonly IRepository<DeliveryDate> _deliveryDateRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 
@@ -45,7 +45,7 @@ public class DeliveryDateService : IDeliveryDateService
     public virtual Task<DeliveryDate> GetDeliveryDateById(string deliveryDateId)
     {
         var key = string.Format(CacheKey.DELIVERYDATE_BY_ID_KEY, deliveryDateId);
-        return _cacheBase.GetAsync(key, () => _deliveryDateRepository.GetByIdAsync(deliveryDateId));
+        return _cache.GetAsync(key, () => _deliveryDateRepository.GetByIdAsync(deliveryDateId));
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class DeliveryDateService : IDeliveryDateService
     /// <returns>Delivery dates</returns>
     public virtual async Task<IList<DeliveryDate>> GetAllDeliveryDates()
     {
-        return await _cacheBase.GetAsync(CacheKey.DELIVERYDATE_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.DELIVERYDATE_ALL, async () =>
         {
             var query = from dd in _deliveryDateRepository.Table
                 orderby dd.DisplayOrder
@@ -74,7 +74,7 @@ public class DeliveryDateService : IDeliveryDateService
         await _deliveryDateRepository.InsertAsync(deliveryDate);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.DELIVERYDATE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DELIVERYDATE_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(deliveryDate);
@@ -91,7 +91,7 @@ public class DeliveryDateService : IDeliveryDateService
         await _deliveryDateRepository.UpdateAsync(deliveryDate);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.DELIVERYDATE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DELIVERYDATE_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(deliveryDate);
@@ -108,10 +108,10 @@ public class DeliveryDateService : IDeliveryDateService
         await _deliveryDateRepository.DeleteAsync(deliveryDate);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.DELIVERYDATE_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.DELIVERYDATE_PATTERN_KEY);
 
         //clear product cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(deliveryDate);

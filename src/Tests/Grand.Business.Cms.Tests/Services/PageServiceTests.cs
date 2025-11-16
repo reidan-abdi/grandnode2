@@ -20,7 +20,7 @@ namespace Grand.Business.Cms.Tests.Services;
 public class PageServiceTests
 {
     private IAclService _aclService;
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private PageService _pageService;
 
@@ -35,7 +35,7 @@ public class PageServiceTests
         _mediatorMock = new Mock<IMediator>();
         _workContextMock = new Mock<IWorkContext>();
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
         _aclService = new AclService(new AccessControlConfig());
@@ -44,7 +44,7 @@ public class PageServiceTests
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
 
         _pageService = new PageService(_repository, _workContextMock.Object, _aclService, _mediatorMock.Object,
-            _cacheBase, new AccessControlConfig());
+            _cache, new AccessControlConfig());
     }
 
     [TestMethod]

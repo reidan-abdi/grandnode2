@@ -1,9 +1,6 @@
 namespace Grand.Infrastructure.Caching;
 
-/// <summary>
-///     Cache manager interface
-/// </summary>
-public interface ICacheBase : IDisposable
+public interface ICache : IDisposable
 {
     Task<T> GetAsync<T>(string key, Func<Task<T>> acquire);
     Task<T> GetAsync<T>(string key, Func<Task<T>> acquire, int cacheTime);

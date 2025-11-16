@@ -23,13 +23,13 @@ public class CollectionService : ICollectionService
     /// <summary>
     ///     Ctor
     /// </summary>
-    public CollectionService(ICacheBase cacheBase,
+    public CollectionService(ICache cache,
         IRepository<Collection> collectionRepository,
         IWorkContext workContext,
         IMediator mediator,
         IAclService aclService, AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _collectionRepository = collectionRepository;
         _workContext = workContext;
         _mediator = mediator;
@@ -44,7 +44,7 @@ public class CollectionService : ICollectionService
     private readonly IRepository<Collection> _collectionRepository;
     private readonly IWorkContext _workContext;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IAclService _aclService;
     private readonly AccessControlConfig _accessControlConfig;
 
@@ -127,7 +127,7 @@ public class CollectionService : ICollectionService
     public virtual Task<Collection> GetCollectionById(string collectionId)
     {
         var key = string.Format(CacheKey.COLLECTIONS_BY_ID_KEY, collectionId);
-        return _cacheBase.GetAsync(key, () => _collectionRepository.GetByIdAsync(collectionId));
+        return _cache.GetAsync(key, () => _collectionRepository.GetByIdAsync(collectionId));
     }
 
     /// <summary>
@@ -141,8 +141,8 @@ public class CollectionService : ICollectionService
         await _collectionRepository.InsertAsync(collection);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.COLLECTIONS_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COLLECTIONS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(collection);
@@ -159,8 +159,8 @@ public class CollectionService : ICollectionService
         await _collectionRepository.UpdateAsync(collection);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.COLLECTIONS_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COLLECTIONS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(collection);
@@ -174,7 +174,7 @@ public class CollectionService : ICollectionService
     {
         ArgumentNullException.ThrowIfNull(collection);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.COLLECTIONS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COLLECTIONS_PATTERN_KEY);
 
         await _collectionRepository.DeleteAsync(collection);
 

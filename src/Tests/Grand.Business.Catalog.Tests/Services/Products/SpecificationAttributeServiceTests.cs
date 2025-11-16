@@ -15,7 +15,7 @@ namespace Grand.Business.Catalog.Tests.Services.Products;
 [TestClass]
 public class SpecificationAttributeServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private Mock<IProductService> _productServiceMock;
     private IRepository<SpecificationAttribute> _repository;
@@ -35,9 +35,9 @@ public class SpecificationAttributeServiceTests
                 new() { Id = "1", Published = true }, new() { Id = "2", Published = true },
                 new() { Id = "3", Published = true }
             }));
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        service = new SpecificationAttributeService(_cacheBase, _repository, _repositoryProduct, _mediatorMock.Object);
+        service = new SpecificationAttributeService(_cache, _repository, _repositoryProduct, _mediatorMock.Object);
     }
 
     [TestMethod]

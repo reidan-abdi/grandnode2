@@ -18,7 +18,7 @@ namespace Grand.Business.Catalog.Tests.Events.Handlers;
 public class DiscountDeletedEventHandlerTests
 {
     private IRepository<Brand> _brandRepository;
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private IRepository<Category> _categoryRepository;
     private IRepository<Collection> _collectionRepository;
     private IRepository<DiscountCoupon> _discountCouponRepository;
@@ -38,11 +38,11 @@ public class DiscountDeletedEventHandlerTests
         _collectionRepository = new MongoDBRepositoryTest<Collection>();
         _vendorRepository = new MongoDBRepositoryTest<Vendor>();
         _discountCouponRepository = new MongoDBRepositoryTest<DiscountCoupon>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
         _handler = new DiscountDeletedEventHandler(_productRepository, _categoryRepository,
-            _brandRepository, _collectionRepository, _vendorRepository, _discountCouponRepository, _cacheBase);
+            _brandRepository, _collectionRepository, _vendorRepository, _discountCouponRepository, _cache);
     }
 
     [TestMethod]

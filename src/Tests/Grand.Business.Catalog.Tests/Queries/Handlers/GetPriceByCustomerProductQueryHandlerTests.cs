@@ -11,7 +11,7 @@ namespace Grand.Business.Catalog.Tests.Queries.Handlers;
 [TestClass]
 public class GetPriceByCustomerProductQueryHandlerTests
 {
-    private Mock<ICacheBase> _casheManagerMock;
+    private Mock<ICache> _casheManagerMock;
     private Mock<IRepository<CustomerProductPrice>> _customerProductPriceRepositoryMock;
 
     private GetPriceByCustomerProductQueryHandler handler;
@@ -19,7 +19,7 @@ public class GetPriceByCustomerProductQueryHandlerTests
     [TestInitialize]
     public void Init()
     {
-        _casheManagerMock = new Mock<ICacheBase>();
+        _casheManagerMock = new Mock<ICache>();
         _customerProductPriceRepositoryMock = new Mock<IRepository<CustomerProductPrice>>();
 
         handler = new GetPriceByCustomerProductQueryHandler(_casheManagerMock.Object,

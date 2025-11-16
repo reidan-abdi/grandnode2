@@ -14,20 +14,20 @@ namespace Grand.Web.Features.Handlers.Catalog;
 
 public class GetHomepageCollectionsHandler : IRequestHandler<GetHomepageCollections, IList<CollectionModel>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly ICollectionService _collectionService;
     private readonly MediaSettings _mediaSettings;
     private readonly IPictureService _pictureService;
     private readonly ITranslationService _translationService;
 
     public GetHomepageCollectionsHandler(
-        ICacheBase cacheBase,
+        ICache cache,
         ICollectionService collectionService,
         IPictureService pictureService,
         ITranslationService translationService,
         MediaSettings mediaSettings)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _collectionService = collectionService;
         _pictureService = pictureService;
         _translationService = translationService;
@@ -40,7 +40,7 @@ public class GetHomepageCollectionsHandler : IRequestHandler<GetHomepageCollecti
         var collectionsCacheKey =
             string.Format(CacheKeyConst.COLLECTION_HOMEPAGE_KEY, request.Store.Id, request.Language.Id);
 
-        var model = await _cacheBase.GetAsync(collectionsCacheKey, async () =>
+        var model = await _cache.GetAsync(collectionsCacheKey, async () =>
         {
             var modelCollect = new List<CollectionModel>();
             var allcollections = await _collectionService.GetAllCollections(storeId: request.Store.Id);

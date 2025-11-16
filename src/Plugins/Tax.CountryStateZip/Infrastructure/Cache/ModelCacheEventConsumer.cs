@@ -21,26 +21,26 @@ public class ModelCacheEventConsumer :
 
     public const string ALL_TAX_RATES_PATTERN_KEY = "Grand.plugins.tax.countrystatezip";
 
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
-    public ModelCacheEventConsumer(ICacheBase cacheBase)
+    public ModelCacheEventConsumer(ICache cache)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public async Task Handle(EntityDeleted<TaxRate> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(ALL_TAX_RATES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(ALL_TAX_RATES_PATTERN_KEY);
     }
 
     //tax rates
     public async Task Handle(EntityInserted<TaxRate> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(ALL_TAX_RATES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(ALL_TAX_RATES_PATTERN_KEY);
     }
 
     public async Task Handle(EntityUpdated<TaxRate> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(ALL_TAX_RATES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(ALL_TAX_RATES_PATTERN_KEY);
     }
 }

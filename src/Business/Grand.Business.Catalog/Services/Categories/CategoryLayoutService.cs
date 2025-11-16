@@ -19,14 +19,14 @@ public class CategoryLayoutService : ICategoryLayoutService
     ///     Ctor
     /// </summary>
     /// <param name="categoryLayoutRepository">Category layout repository</param>
-    /// <param name="cacheBase">cache base</param>
+    /// <param name="cache">cache base</param>
     /// <param name="mediator">Mediator</param>
     public CategoryLayoutService(IRepository<CategoryLayout> categoryLayoutRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _categoryLayoutRepository = categoryLayoutRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -35,7 +35,7 @@ public class CategoryLayoutService : ICategoryLayoutService
     #region Fields
 
     private readonly IRepository<CategoryLayout> _categoryLayoutRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -48,7 +48,7 @@ public class CategoryLayoutService : ICategoryLayoutService
     /// <returns>Category layouts</returns>
     public virtual async Task<IList<CategoryLayout>> GetAllCategoryLayouts()
     {
-        return await _cacheBase.GetAsync(CacheKey.CATEGORY_LAYOUT_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.CATEGORY_LAYOUT_ALL, async () =>
         {
             var query = from pt in _categoryLayoutRepository.Table
                 orderby pt.DisplayOrder
@@ -65,7 +65,7 @@ public class CategoryLayoutService : ICategoryLayoutService
     public virtual Task<CategoryLayout> GetCategoryLayoutById(string categoryLayoutId)
     {
         var key = string.Format(CacheKey.CATEGORY_LAYOUT_BY_ID_KEY, categoryLayoutId);
-        return _cacheBase.GetAsync(key, () => _categoryLayoutRepository.GetByIdAsync(categoryLayoutId));
+        return _cache.GetAsync(key, () => _categoryLayoutRepository.GetByIdAsync(categoryLayoutId));
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class CategoryLayoutService : ICategoryLayoutService
         await _categoryLayoutRepository.InsertAsync(categoryLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.CATEGORY_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CATEGORY_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(categoryLayout);
@@ -96,7 +96,7 @@ public class CategoryLayoutService : ICategoryLayoutService
         await _categoryLayoutRepository.UpdateAsync(categoryLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.CATEGORY_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CATEGORY_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(categoryLayout);
@@ -113,7 +113,7 @@ public class CategoryLayoutService : ICategoryLayoutService
         await _categoryLayoutRepository.DeleteAsync(categoryLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.CATEGORY_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CATEGORY_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(categoryLayout);

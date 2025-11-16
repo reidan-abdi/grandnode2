@@ -16,7 +16,7 @@ namespace Grand.Business.Catalog.Tests.Events.Handlers;
 [TestClass]
 public class CategoryDeletedEventHandlerTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private IRepository<EntityUrl> _entityUrlRepository;
 
     private CategoryDeletedEventHandler _handler;
@@ -29,10 +29,10 @@ public class CategoryDeletedEventHandlerTests
         _mediatorMock = new Mock<IMediator>();
         _repository = new MongoDBRepositoryTest<Product>();
         _entityUrlRepository = new MongoDBRepositoryTest<EntityUrl>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
-        _handler = new CategoryDeletedEventHandler(_entityUrlRepository, _repository, _cacheBase);
+        _handler = new CategoryDeletedEventHandler(_entityUrlRepository, _repository, _cache);
     }
 
 

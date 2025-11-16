@@ -18,14 +18,14 @@ public class LanguageService : ILanguageService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="languageRepository">Language repository</param>
     /// <param name="mediator">Mediator</param>
-    public LanguageService(ICacheBase cacheBase,
+    public LanguageService(ICache cache,
         IRepository<Language> languageRepository,
         IMediator mediator)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _languageRepository = languageRepository;
         _mediator = mediator;
     }
@@ -35,7 +35,7 @@ public class LanguageService : ILanguageService
     #region Fields
 
     private readonly IRepository<Language> _languageRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -51,7 +51,7 @@ public class LanguageService : ILanguageService
     public virtual async Task<IList<Language>> GetAllLanguages(bool showHidden = false, string storeId = "")
     {
         var key = string.Format(CacheKey.LANGUAGES_ALL_KEY, showHidden);
-        var languages = await _cacheBase.GetAsync(key, async () =>
+        var languages = await _cache.GetAsync(key, async () =>
         {
             var query = from p in _languageRepository.Table
                 select p;
@@ -78,7 +78,7 @@ public class LanguageService : ILanguageService
     public virtual Task<Language> GetLanguageById(string languageId)
     {
         var key = string.Format(CacheKey.LANGUAGES_BY_ID_KEY, languageId);
-        return _cacheBase.GetAsync(key, () => _languageRepository.GetByIdAsync(languageId));
+        return _cache.GetAsync(key, () => _languageRepository.GetByIdAsync(languageId));
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class LanguageService : ILanguageService
             throw new ArgumentNullException(nameof(languageCode));
 
         var key = string.Format(CacheKey.LANGUAGES_BY_CODE, languageCode);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from q in _languageRepository.Table
                 where q.UniqueSeoCode.ToLowerInvariant() == languageCode.ToLowerInvariant()
@@ -112,7 +112,7 @@ public class LanguageService : ILanguageService
         await _languageRepository.InsertAsync(language);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.LANGUAGES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.LANGUAGES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(language);
@@ -130,7 +130,7 @@ public class LanguageService : ILanguageService
         await _languageRepository.UpdateAsync(language);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.LANGUAGES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.LANGUAGES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(language);
@@ -147,7 +147,7 @@ public class LanguageService : ILanguageService
         await _languageRepository.DeleteAsync(language);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.LANGUAGES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.LANGUAGES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(language);

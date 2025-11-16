@@ -16,7 +16,7 @@ namespace Grand.Business.Storage.Tests.Services;
 [TestClass]
 public class PictureServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<ILogger<PictureService>> _logerMock;
     private Mock<IMediaFileStore> _mediaFileStoreMock;
     private Mock<IMediator> _mediatorMock;
@@ -36,7 +36,7 @@ public class PictureServiceTests
         _logerMock = new Mock<ILogger<PictureService>>();
         _mediatorMock = new Mock<IMediator>();
         _workContextMock = new Mock<IWorkContext>();
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _mediaFileStoreMock = new Mock<IMediaFileStore>();
         _settings = new MediaSettings();
         _storagesettings = new StorageSettings();

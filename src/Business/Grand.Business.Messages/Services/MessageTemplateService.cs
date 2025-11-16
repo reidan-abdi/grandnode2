@@ -17,12 +17,12 @@ public class MessageTemplateService : IMessageTemplateService
     /// <summary>
     ///     Ctor
     /// </summary>
-    public MessageTemplateService(ICacheBase cacheBase,
+    public MessageTemplateService(ICache cache,
         IAclService aclService,
         IRepository<MessageTemplate> messageTemplateRepository,
         IMediator mediator, AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _aclService = aclService;
         _messageTemplateRepository = messageTemplateRepository;
         _mediator = mediator;
@@ -36,7 +36,7 @@ public class MessageTemplateService : IMessageTemplateService
     private readonly IRepository<MessageTemplate> _messageTemplateRepository;
     private readonly IAclService _aclService;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly AccessControlConfig _accessControlConfig;
 
     #endregion
@@ -53,7 +53,7 @@ public class MessageTemplateService : IMessageTemplateService
 
         await _messageTemplateRepository.InsertAsync(messageTemplate);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.MESSAGETEMPLATES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.MESSAGETEMPLATES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(messageTemplate);
@@ -69,7 +69,7 @@ public class MessageTemplateService : IMessageTemplateService
 
         await _messageTemplateRepository.UpdateAsync(messageTemplate);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.MESSAGETEMPLATES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.MESSAGETEMPLATES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(messageTemplate);
@@ -85,7 +85,7 @@ public class MessageTemplateService : IMessageTemplateService
 
         await _messageTemplateRepository.DeleteAsync(messageTemplate);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.MESSAGETEMPLATES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.MESSAGETEMPLATES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(messageTemplate);
@@ -113,7 +113,7 @@ public class MessageTemplateService : IMessageTemplateService
             throw new ArgumentException(null, nameof(messageTemplateName));
 
         var key = string.Format(CacheKey.MESSAGETEMPLATES_BY_NAME_KEY, messageTemplateName, storeId);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _messageTemplateRepository.Table
                 select p;
@@ -140,7 +140,7 @@ public class MessageTemplateService : IMessageTemplateService
     public virtual async Task<IList<MessageTemplate>> GetAllMessageTemplates(string storeId)
     {
         var key = string.Format(CacheKey.MESSAGETEMPLATES_ALL_KEY, storeId);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _messageTemplateRepository.Table
                 select p;

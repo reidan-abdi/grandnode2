@@ -10,7 +10,7 @@ namespace Grand.Business.Catalog.Tests.Events.Handlers;
 [TestClass]
 public class ProductPublishEventHandlerTests
 {
-    private Mock<ICacheBase> _casheManagerMock;
+    private Mock<ICache> _casheManagerMock;
 
     private ProductPublishEventHandler handlerPublish;
     private ProductUnPublishEventHandler handlerUnPublish;
@@ -18,7 +18,7 @@ public class ProductPublishEventHandlerTests
     [TestInitialize]
     public void Init()
     {
-        _casheManagerMock = new Mock<ICacheBase>();
+        _casheManagerMock = new Mock<ICache>();
         handlerPublish = new ProductPublishEventHandler(_casheManagerMock.Object);
         handlerUnPublish = new ProductUnPublishEventHandler(_casheManagerMock.Object);
     }

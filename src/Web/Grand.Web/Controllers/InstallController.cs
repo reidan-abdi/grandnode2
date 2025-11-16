@@ -24,14 +24,14 @@ public class InstallController : Controller
     #region Ctor
 
     public InstallController(
-        ICacheBase cacheBase,
+        ICache cache,
         IHostApplicationLifetime applicationLifetime,
         IServiceProvider serviceProvider,
         IMediator mediator,
         DatabaseConfig litedbConfig,
         ILogger<InstallController> logger)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _applicationLifetime = applicationLifetime;
         _serviceProvider = serviceProvider;
         _mediator = mediator;
@@ -43,7 +43,7 @@ public class InstallController : Controller
 
     #region Fields
 
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IServiceProvider _serviceProvider;
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly IMediator _mediator;
@@ -119,7 +119,7 @@ public class InstallController : Controller
         if (DataSettingsManager.DatabaseIsInstalled())
             return RedirectToRoute("HomePage");
 
-        var installed = await _cacheBase.GetAsync("Installed", async () => await Task.FromResult(false));
+        var installed = await _cache.GetAsync("Installed", async () => await Task.FromResult(false));
         return View(installed ? new InstallModel { Installed = true } : PrepareModel(null));
     }
 
@@ -209,7 +209,7 @@ public class InstallController : Controller
         if (DataSettingsManager.DatabaseIsInstalled())
             return RedirectToRoute("HomePage");
 
-        var installed = await _cacheBase.GetAsync("Installed", async () => await Task.FromResult(false));
+        var installed = await _cache.GetAsync("Installed", async () => await Task.FromResult(false));
         if (installed)
             return View(new InstallModel { Installed = true });
 
@@ -275,14 +275,14 @@ public class InstallController : Controller
             _logger.LogInformation("Migration process has been executed");
 
             //restart application
-            await _cacheBase.SetAsync("Installed", async () => await Task.FromResult(true));
+            await _cache.SetAsync("Installed", async () => await Task.FromResult(true));
             return View(new InstallModel { Installed = true });
         }
         catch (Exception exception)
         {
             //reset cache
             DataSettingsManager.Instance.ResetCache();
-            await _cacheBase.Clear();
+            await _cache.Clear();
 
             System.IO.File.Delete(Path.Combine(AppContext.BaseDirectory, CommonPath.AppData, CommonPath.SettingsFile));
 

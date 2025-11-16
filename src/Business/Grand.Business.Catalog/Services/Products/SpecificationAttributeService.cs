@@ -19,12 +19,12 @@ public class SpecificationAttributeService : ISpecificationAttributeService
     /// <summary>
     ///     Ctor
     /// </summary>
-    public SpecificationAttributeService(ICacheBase cacheBase,
+    public SpecificationAttributeService(ICache cache,
         IRepository<SpecificationAttribute> specificationAttributeRepository,
         IRepository<Product> productRepository,
         IMediator mediator)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _specificationAttributeRepository = specificationAttributeRepository;
         _mediator = mediator;
         _productRepository = productRepository;
@@ -36,7 +36,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
 
     private readonly IRepository<Product> _productRepository;
     private readonly IRepository<SpecificationAttribute> _specificationAttributeRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -53,7 +53,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
     public virtual async Task<SpecificationAttribute> GetSpecificationAttributeById(string specificationAttributeId)
     {
         var key = string.Format(CacheKey.SPECIFICATION_BY_ID_KEY, specificationAttributeId);
-        return await _cacheBase.GetAsync(key,
+        return await _cache.GetAsync(key,
             () => _specificationAttributeRepository.GetByIdAsync(specificationAttributeId));
     }
 
@@ -70,7 +70,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
         sename = sename.ToLowerInvariant();
 
         var key = string.Format(CacheKey.SPECIFICATION_BY_SENAME, sename);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
             await Task.FromResult(_specificationAttributeRepository.Table
                 .FirstOrDefault(x => x.SeName == sename)));
     }
@@ -103,7 +103,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
         await _specificationAttributeRepository.InsertAsync(specificationAttribute);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SPECIFICATION_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SPECIFICATION_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(specificationAttribute);
@@ -120,7 +120,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
         await _specificationAttributeRepository.UpdateAsync(specificationAttribute);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SPECIFICATION_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SPECIFICATION_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(specificationAttribute);
@@ -141,8 +141,8 @@ public class SpecificationAttributeService : ISpecificationAttributeService
         await _specificationAttributeRepository.DeleteAsync(specificationAttribute);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.SPECIFICATION_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SPECIFICATION_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(specificationAttribute);
@@ -164,7 +164,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
             return await Task.FromResult<SpecificationAttribute>(null);
 
         var key = string.Format(CacheKey.SPECIFICATION_BY_OPTIONID_KEY, specificationAttributeOptionId);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _specificationAttributeRepository.Table
                 where p.SpecificationAttributeOptions.Any(x => x.Id == specificationAttributeOptionId)
@@ -196,8 +196,8 @@ public class SpecificationAttributeService : ISpecificationAttributeService
         await UpdateSpecificationAttribute(specificationAttribute);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.SPECIFICATION_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.SPECIFICATION_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(specificationAttributeOption);
@@ -221,7 +221,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
             productSpecificationAttribute);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityInserted(productSpecificationAttribute);
@@ -241,7 +241,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
             productSpecificationAttribute.Id, productSpecificationAttribute);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityUpdated(productSpecificationAttribute);
@@ -261,7 +261,7 @@ public class SpecificationAttributeService : ISpecificationAttributeService
             productSpecificationAttribute.Id);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityDeleted(productSpecificationAttribute);

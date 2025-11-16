@@ -12,7 +12,7 @@ namespace Grand.Business.Catalog.Tests.Services.Products;
 [TestClass]
 public class CustomerGroupProductServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private CustomerGroupProductService _custometGroupService;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<CustomerGroupProduct>> _repositoryMock;
@@ -22,7 +22,7 @@ public class CustomerGroupProductServiceTests
     {
         _repositoryMock = new Mock<IRepository<CustomerGroupProduct>>();
         _mediatorMock = new Mock<IMediator>();
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _custometGroupService =
             new CustomerGroupProductService(_repositoryMock.Object, _cacheMock.Object, _mediatorMock.Object);
     }

@@ -15,7 +15,7 @@ namespace Grand.Business.Catalog.Tests.Services.Products;
 [TestClass]
 public class RecentlyViewedProductsServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private Mock<IProductService> _productServiceMock;
     private IRepository<RecentlyViewedProduct> _repository;
@@ -32,9 +32,9 @@ public class RecentlyViewedProductsServiceTests
                 new() { Id = "1", Published = true }, new() { Id = "2", Published = true },
                 new() { Id = "3", Published = true }
             }));
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _service = new RecentlyViewedProductsService(_productServiceMock.Object, _cacheBase,
+        _service = new RecentlyViewedProductsService(_productServiceMock.Object, _cache,
             new CatalogSettings { RecentlyViewedProductsEnabled = true, RecentlyViewedProductsNumber = 10 },
             _repository);
     }

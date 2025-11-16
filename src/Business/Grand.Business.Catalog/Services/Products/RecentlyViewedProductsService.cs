@@ -17,17 +17,17 @@ public class RecentlyViewedProductsService : IRecentlyViewedProductsService
     ///     Ctor
     /// </summary>
     /// <param name="productService">Product service</param>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="catalogSettings">Catalog settings</param>
     /// <param name="recentlyViewedProducts">Collection recentlyViewedProducts</param>
     public RecentlyViewedProductsService(
         IProductService productService,
-        ICacheBase cacheBase,
+        ICache cache,
         CatalogSettings catalogSettings,
         IRepository<RecentlyViewedProduct> recentlyViewedProducts)
     {
         _productService = productService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _catalogSettings = catalogSettings;
         _recentlyViewedProducts = recentlyViewedProducts;
     }
@@ -37,7 +37,7 @@ public class RecentlyViewedProductsService : IRecentlyViewedProductsService
     #region Fields
 
     private readonly IProductService _productService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CatalogSettings _catalogSettings;
     private readonly IRepository<RecentlyViewedProduct> _recentlyViewedProducts;
 
@@ -64,7 +64,7 @@ public class RecentlyViewedProductsService : IRecentlyViewedProductsService
     protected async Task<IList<string>> GetRecentlyViewedProductsIds(string customerId, int number)
     {
         var key = string.Format(CacheKey.RECENTLY_VIEW_PRODUCTS_KEY, customerId, number);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _recentlyViewedProducts.Table
                 where p.CustomerId == customerId
@@ -117,7 +117,7 @@ public class RecentlyViewedProductsService : IRecentlyViewedProductsService
                 .Take(recentlyViewedProducts.Count - _catalogSettings.RecentlyViewedProductsNumber));
 
         //Clear cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.RECENTLY_VIEW_PRODUCTS_PATTERN_KEY, customerId));
+        await _cache.RemoveByPrefix(string.Format(CacheKey.RECENTLY_VIEW_PRODUCTS_PATTERN_KEY, customerId));
     }
 
     #endregion

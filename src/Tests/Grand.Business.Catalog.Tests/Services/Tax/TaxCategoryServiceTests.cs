@@ -14,7 +14,7 @@ namespace Grand.Business.Catalog.Tests.Services.Tax;
 [TestClass]
 public class TaxCategoryServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private IRepository<TaxCategory> _repository;
     private TaxCategoryService _taxCategoryService;
@@ -25,9 +25,9 @@ public class TaxCategoryServiceTests
         _repository = new MongoDBRepositoryTest<TaxCategory>();
         _mediatorMock = new Mock<IMediator>();
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _taxCategoryService = new TaxCategoryService(_cacheBase, _repository, _mediatorMock.Object);
+        _taxCategoryService = new TaxCategoryService(_cache, _repository, _mediatorMock.Object);
     }
 
 

@@ -17,7 +17,7 @@ namespace Grand.Business.Marketing.Tests.Services.Contacts;
 [TestClass]
 public class ContactAttributeServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private ContactAttributeService _contactAttributeService;
     private Mock<IMediator> _mediatorMock;
     private IRepository<ContactAttribute> _repository;
@@ -32,9 +32,9 @@ public class ContactAttributeServiceTests
         _workContextMock.Setup(c => c.CurrentStore).Returns(() => new Store { Id = "" });
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
         var accessControlConfig = new AccessControlConfig();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _contactAttributeService = new ContactAttributeService(_cacheBase, _repository, _mediatorMock.Object,
+        _contactAttributeService = new ContactAttributeService(_cache, _repository, _mediatorMock.Object,
             _workContextMock.Object, accessControlConfig);
     }
 

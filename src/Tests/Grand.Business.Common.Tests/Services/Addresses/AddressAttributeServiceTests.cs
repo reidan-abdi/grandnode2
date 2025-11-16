@@ -14,7 +14,7 @@ namespace Grand.Business.Common.Tests.Services.Addresses;
 [TestClass]
 public class AddressAttributeServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<MongoRepository<AddressAttribute>> _repositoryMock;
     private AddressAttributeService _service;
@@ -24,7 +24,7 @@ public class AddressAttributeServiceTests
     {
         var settingsPath = Path.Combine("", CommonPath.AppData, CommonPath.SettingsFile);
         DataSettingsManager.Initialize(settingsPath);
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _repositoryMock = new Mock<MongoRepository<AddressAttribute>>(Mock.Of<IAuditInfoProvider>());
         _mediatorMock = new Mock<IMediator>();
         _service = new AddressAttributeService(_cacheMock.Object, _repositoryMock.Object, _mediatorMock.Object);

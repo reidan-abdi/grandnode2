@@ -11,7 +11,7 @@ namespace Grand.Business.System.Tests.Services.Admin;
 [TestClass]
 public class AdminSiteMapServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<AdminSiteMap>> _repositoryMock;
     private AdminSiteMapService _service;
@@ -20,7 +20,7 @@ public class AdminSiteMapServiceTests
     public void Init()
     {
         _repositoryMock = new Mock<IRepository<AdminSiteMap>>();
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _mediatorMock = new Mock<IMediator>();
         _service = new AdminSiteMapService(_repositoryMock.Object, _cacheMock.Object, _mediatorMock.Object);
     }

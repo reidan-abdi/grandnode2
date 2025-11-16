@@ -17,7 +17,7 @@ namespace Grand.Web.Features.Handlers.News;
 
 public class GetHomePageNewsItemsHandler : IRequestHandler<GetHomePageNewsItems, HomePageNewsItemsModel>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IDateTimeService _dateTimeService;
     private readonly MediaSettings _mediaSettings;
     private readonly INewsService _newsService;
@@ -27,11 +27,11 @@ public class GetHomePageNewsItemsHandler : IRequestHandler<GetHomePageNewsItems,
     private readonly ITranslationService _translationService;
     private readonly IWorkContext _workContext;
 
-    public GetHomePageNewsItemsHandler(ICacheBase cacheBase, IWorkContext workContext,
+    public GetHomePageNewsItemsHandler(ICache cache, IWorkContext workContext,
         INewsService newsService, IDateTimeService dateTimeService, IPictureService pictureService,
         ITranslationService translationService, NewsSettings newsSettings, MediaSettings mediaSettings)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _workContext = workContext;
         _newsService = newsService;
         _dateTimeService = dateTimeService;
@@ -45,7 +45,7 @@ public class GetHomePageNewsItemsHandler : IRequestHandler<GetHomePageNewsItems,
     {
         var cacheKey = string.Format(CacheKeyConst.HOMEPAGE_NEWSMODEL_KEY, _workContext.WorkingLanguage.Id,
             _workContext.CurrentStore.Id);
-        var model = await _cacheBase.GetAsync(cacheKey, async () =>
+        var model = await _cache.GetAsync(cacheKey, async () =>
         {
             var newsItems =
                 await _newsService.GetAllNews(_workContext.CurrentStore.Id, 0, _newsSettings.MainPageNewsCount);

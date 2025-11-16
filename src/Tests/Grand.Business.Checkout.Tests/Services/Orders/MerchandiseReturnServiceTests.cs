@@ -15,7 +15,7 @@ namespace Grand.Business.Checkout.Tests.Services.Orders;
 [TestClass]
 public class MerchandiseReturnServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
 
     private Mock<IMediator> _mediatorMock;
     private IRepository<MerchandiseReturnAction> _merchandiseReturnActionRepository;
@@ -40,11 +40,11 @@ public class MerchandiseReturnServiceTests
         _mediatorMock.Setup(x => x.Send(It.IsAny<GetMerchandiseReturnQuery>(), default))
             .Returns(Task.FromResult(query));
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
         _merchandiseReturnService = new MerchandiseReturnService(_repository, _merchandiseReturnActionRepository,
-            _merchandiseReturnReasonRepository, _merchandiseReturnNoteRepository, _cacheBase, _mediatorMock.Object);
+            _merchandiseReturnReasonRepository, _merchandiseReturnNoteRepository, _cache, _mediatorMock.Object);
     }
 
     [TestMethod]

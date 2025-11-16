@@ -21,7 +21,7 @@ namespace Grand.Business.Catalog.Tests.Services.Categories;
 public class CategoryServiceDbTests
 {
     private IAclService _aclServiceMock;
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private IRepository<Category> _categoryRepository;
     private CategoryService _categoryService;
     private Mock<IMediator> _mediatorMock;
@@ -38,9 +38,9 @@ public class CategoryServiceDbTests
         _mediatorMock = new Mock<IMediator>();
         _aclServiceMock = new AclService(new AccessControlConfig());
         _settings = new CatalogSettings();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _categoryService = new CategoryService(_cacheBase, _categoryRepository, _workContextMock.Object,
+        _categoryService = new CategoryService(_cache, _categoryRepository, _workContextMock.Object,
             _mediatorMock.Object, _aclServiceMock, new AccessControlConfig());
     }
 

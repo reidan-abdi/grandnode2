@@ -15,19 +15,19 @@ namespace Grand.Web.Features.Handlers.Catalog;
 public class GetHomepageBrandsHandler : IRequestHandler<GetHomepageBrands, IList<BrandModel>>
 {
     private readonly IBrandService _brandService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly MediaSettings _mediaSettings;
     private readonly IPictureService _pictureService;
     private readonly ITranslationService _translationService;
 
     public GetHomepageBrandsHandler(
-        ICacheBase cacheBase,
+        ICache cache,
         IBrandService brandService,
         IPictureService pictureService,
         ITranslationService translationService,
         MediaSettings mediaSettings)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _brandService = brandService;
         _pictureService = pictureService;
         _translationService = translationService;
@@ -38,7 +38,7 @@ public class GetHomepageBrandsHandler : IRequestHandler<GetHomepageBrands, IList
     {
         var brandsCacheKey = string.Format(CacheKeyConst.BRAND_HOMEPAGE_KEY, request.Store.Id, request.Language.Id);
 
-        var model = await _cacheBase.GetAsync(brandsCacheKey, async () =>
+        var model = await _cache.GetAsync(brandsCacheKey, async () =>
         {
             var modelBrands = new List<BrandModel>();
             var allBrands = await _brandService.GetAllBrands(storeId: request.Store.Id);

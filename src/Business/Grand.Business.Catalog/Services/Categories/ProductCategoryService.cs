@@ -16,19 +16,19 @@ namespace Grand.Business.Catalog.Services.Categories;
 public class ProductCategoryService : IProductCategoryService
 {
     private readonly AccessControlConfig _accessControlConfig;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
     private readonly IRepository<Product> _productRepository;
     private readonly IWorkContext _workContext;
 
     public ProductCategoryService(
         IRepository<Product> productRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IWorkContext workContext,
         IMediator mediator, AccessControlConfig accessControlConfig)
     {
         _productRepository = productRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _workContext = workContext;
         _mediator = mediator;
         _accessControlConfig = accessControlConfig;
@@ -50,7 +50,7 @@ public class ProductCategoryService : IProductCategoryService
 
         var key = string.Format(CacheKey.PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY, showHidden, categoryId, pageIndex,
             pageSize, _workContext.CurrentCustomer.Id, _workContext.CurrentStore.Id);
-        return await _cacheBase.GetAsync(key, () =>
+        return await _cache.GetAsync(key, () =>
         {
             var query = _productRepository.Table.Where(x => x.ProductCategories.Any(y => y.CategoryId == categoryId));
 
@@ -107,8 +107,8 @@ public class ProductCategoryService : IProductCategoryService
         await _productRepository.AddToSet(productId, x => x.ProductCategories, productCategory);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTCATEGORIES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTCATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityInserted(productCategory);
@@ -127,8 +127,8 @@ public class ProductCategoryService : IProductCategoryService
             productCategory);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTCATEGORIES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTCATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityUpdated(productCategory);
@@ -146,8 +146,8 @@ public class ProductCategoryService : IProductCategoryService
         await _productRepository.PullFilter(productId, x => x.ProductCategories, z => z.Id, productCategory.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTCATEGORIES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTCATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityDeleted(productCategory);

@@ -10,25 +10,25 @@ public class NewsItemNotificatioHandler :
     INotificationHandler<EntityUpdated<NewsItem>>,
     INotificationHandler<EntityDeleted<NewsItem>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
-    public NewsItemNotificatioHandler(ICacheBase cacheBase)
+    public NewsItemNotificatioHandler(ICache cache)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     public async Task Handle(EntityDeleted<NewsItem> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.NEWS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.NEWS_PATTERN_KEY);
     }
 
     public async Task Handle(EntityInserted<NewsItem> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.NEWS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.NEWS_PATTERN_KEY);
     }
 
     public async Task Handle(EntityUpdated<NewsItem> eventMessage, CancellationToken cancellationToken)
     {
-        await _cacheBase.RemoveByPrefix(CacheKeyConst.NEWS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKeyConst.NEWS_PATTERN_KEY);
     }
 }

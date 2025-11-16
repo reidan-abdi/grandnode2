@@ -13,17 +13,17 @@ public class GetSuggestedProductsQueryHandler : IRequestHandler<GetSuggestedProd
 {
     public GetSuggestedProductsQueryHandler(
         IProductService productService,
-        ICacheBase cacheBase,
+        ICache cache,
         IRepository<CustomerTagProduct> customerTagProductRepository)
     {
         _productService = productService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _customerTagProductRepository = customerTagProductRepository;
     }
 
     public async Task<IList<Product>> Handle(GetSuggestedProductsQuery request, CancellationToken cancellationToken)
     {
-        return await _cacheBase.GetAsync(
+        return await _cache.GetAsync(
             string.Format(CacheKey.PRODUCTS_CUSTOMER_TAG, string.Join(",", request.CustomerTagIds)), async () =>
             {
                 var query = from cr in _customerTagProductRepository.Table
@@ -42,7 +42,7 @@ public class GetSuggestedProductsQueryHandler : IRequestHandler<GetSuggestedProd
     #region Fields
 
     private readonly IProductService _productService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<CustomerTagProduct> _customerTagProductRepository;
 
     #endregion

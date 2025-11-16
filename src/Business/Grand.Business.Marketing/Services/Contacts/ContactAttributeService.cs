@@ -21,12 +21,12 @@ public class ContactAttributeService : IContactAttributeService
     /// <summary>
     ///     Ctor
     /// </summary>
-    public ContactAttributeService(ICacheBase cacheBase,
+    public ContactAttributeService(ICache cache,
         IRepository<ContactAttribute> contactAttributeRepository,
         IMediator mediator,
         IWorkContext workContext, AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _contactAttributeRepository = contactAttributeRepository;
         _mediator = mediator;
         _workContext = workContext;
@@ -39,7 +39,7 @@ public class ContactAttributeService : IContactAttributeService
 
     private readonly IRepository<ContactAttribute> _contactAttributeRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IWorkContext _workContext;
     private readonly AccessControlConfig _accessControlConfig;
 
@@ -59,8 +59,8 @@ public class ContactAttributeService : IContactAttributeService
 
         await _contactAttributeRepository.DeleteAsync(contactAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CONTACTATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CONTACTATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CONTACTATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CONTACTATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(contactAttribute);
@@ -76,7 +76,7 @@ public class ContactAttributeService : IContactAttributeService
         bool ignoreAcl = false)
     {
         var key = string.Format(CacheKey.CONTACTATTRIBUTES_ALL_KEY, storeId, ignoreAcl);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from p in _contactAttributeRepository.Table
                 select p;
@@ -110,7 +110,7 @@ public class ContactAttributeService : IContactAttributeService
     public virtual Task<ContactAttribute> GetContactAttributeById(string contactAttributeId)
     {
         var key = string.Format(CacheKey.CONTACTATTRIBUTES_BY_ID_KEY, contactAttributeId);
-        return _cacheBase.GetAsync(key, () => _contactAttributeRepository.GetByIdAsync(contactAttributeId));
+        return _cache.GetAsync(key, () => _contactAttributeRepository.GetByIdAsync(contactAttributeId));
     }
 
     /// <summary>
@@ -123,8 +123,8 @@ public class ContactAttributeService : IContactAttributeService
 
         await _contactAttributeRepository.InsertAsync(contactAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CONTACTATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CONTACTATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CONTACTATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CONTACTATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(contactAttribute);
@@ -140,8 +140,8 @@ public class ContactAttributeService : IContactAttributeService
 
         await _contactAttributeRepository.UpdateAsync(contactAttribute);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CONTACTATTRIBUTES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.CONTACTATTRIBUTEVALUES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CONTACTATTRIBUTES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CONTACTATTRIBUTEVALUES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(contactAttribute);

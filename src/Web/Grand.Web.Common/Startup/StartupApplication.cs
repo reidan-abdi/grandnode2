@@ -57,21 +57,21 @@ public class StartupApplication : IStartupApplication
         var config = new RedisConfig();
         configuration.GetSection("Redis").Bind(config);
 
-        serviceCollection.AddSingleton<ICacheBase, MemoryCacheBase>();
+        serviceCollection.AddSingleton<ICache, MemoryCache>();
 
         if (config.RedisPubSubEnabled)
         {
             var redis = ConnectionMultiplexer.Connect(config.RedisPubSubConnectionString);
             serviceCollection.AddSingleton(_ => redis.GetSubscriber());
             serviceCollection.AddSingleton<IMessageBus, RedisMessageBus>();
-            serviceCollection.AddSingleton<ICacheBase, RedisMessageCacheManager>();
+            serviceCollection.AddSingleton<ICache, RedisMessageCacheManager>();
             return;
         }
 
         var rabbit = new RabbitConfig();
         configuration.GetSection("Rabbit").Bind(rabbit);
         if (rabbit.RabbitCachePubSubEnabled && rabbit.RabbitEnabled)
-            serviceCollection.AddSingleton<ICacheBase, RabbitMqMessageCacheManager>();
+            serviceCollection.AddSingleton<ICache, RabbitMqMessageCacheManager>();
     }
 
     private void RegisterContextService(IServiceCollection serviceCollection)

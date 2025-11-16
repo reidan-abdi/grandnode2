@@ -75,7 +75,7 @@ public class LoginController : BaseController
                 case CustomerLoginResults.Successful:
                 {
                     var customer = _customerSettings.UsernamesEnabled
-                        ? await _customerService.GetCustomerByUsername(model.Username)
+                        ? await _customerService.GetCustomerByName(model.Username)
                         : await _customerService.GetCustomerByEmail(model.Email);
                     //sign in
                     return await SignInAction(customer, model.RememberMe);
@@ -118,7 +118,7 @@ public class LoginController : BaseController
             return RedirectToRoute("VendorLogin");
 
         var customer = _customerSettings.UsernamesEnabled
-            ? await _customerService.GetCustomerByUsername(username)
+            ? await _customerService.GetCustomerByName(username)
             : await _customerService.GetCustomerByEmail(username);
         if (customer == null)
             return RedirectToRoute("VendorLogin");
@@ -150,7 +150,7 @@ public class LoginController : BaseController
             return RedirectToRoute("HomePage");
 
         var customer = _customerSettings.UsernamesEnabled
-            ? await _customerService.GetCustomerByUsername(username)
+            ? await _customerService.GetCustomerByName(username)
             : await _customerService.GetCustomerByEmail(username);
         if (customer == null)
             return RedirectToRoute("VendorLogin");

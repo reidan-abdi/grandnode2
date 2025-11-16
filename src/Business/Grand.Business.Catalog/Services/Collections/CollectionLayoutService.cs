@@ -19,14 +19,14 @@ public class CollectionLayoutService : ICollectionLayoutService
     ///     Ctor
     /// </summary>
     /// <param name="collectionLayoutRepository">Collection layout repository</param>
-    /// <param name="cacheBase">Cache base</param>
+    /// <param name="cache">Cache base</param>
     /// <param name="mediator">Mediator</param>
     public CollectionLayoutService(IRepository<CollectionLayout> collectionLayoutRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _collectionLayoutRepository = collectionLayoutRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -35,7 +35,7 @@ public class CollectionLayoutService : ICollectionLayoutService
     #region Fields
 
     private readonly IRepository<CollectionLayout> _collectionLayoutRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -48,7 +48,7 @@ public class CollectionLayoutService : ICollectionLayoutService
     /// <returns>Collection layouts</returns>
     public virtual async Task<IList<CollectionLayout>> GetAllCollectionLayouts()
     {
-        return await _cacheBase.GetAsync(CacheKey.COLLECTION_LAYOUT_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.COLLECTION_LAYOUT_ALL, async () =>
         {
             var query = from pt in _collectionLayoutRepository.Table
                 orderby pt.DisplayOrder
@@ -65,7 +65,7 @@ public class CollectionLayoutService : ICollectionLayoutService
     public virtual Task<CollectionLayout> GetCollectionLayoutById(string collectionLayoutId)
     {
         var key = string.Format(CacheKey.COLLECTION_LAYOUT_BY_ID_KEY, collectionLayoutId);
-        return _cacheBase.GetAsync(key, () => _collectionLayoutRepository.GetByIdAsync(collectionLayoutId));
+        return _cache.GetAsync(key, () => _collectionLayoutRepository.GetByIdAsync(collectionLayoutId));
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class CollectionLayoutService : ICollectionLayoutService
         await _collectionLayoutRepository.InsertAsync(collectionLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.COLLECTION_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COLLECTION_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(collectionLayout);
@@ -96,7 +96,7 @@ public class CollectionLayoutService : ICollectionLayoutService
         await _collectionLayoutRepository.UpdateAsync(collectionLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.COLLECTION_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COLLECTION_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(collectionLayout);
@@ -113,7 +113,7 @@ public class CollectionLayoutService : ICollectionLayoutService
         await _collectionLayoutRepository.DeleteAsync(collectionLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.COLLECTION_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.COLLECTION_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(collectionLayout);

@@ -22,12 +22,12 @@ public class BrandService : IBrandService
     /// <summary>
     ///     Ctor
     /// </summary>
-    public BrandService(ICacheBase cacheBase,
+    public BrandService(ICache cache,
         IRepository<Brand> brandRepository,
         IWorkContext workContext,
         IMediator mediator, AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _brandRepository = brandRepository;
         _workContext = workContext;
         _mediator = mediator;
@@ -41,7 +41,7 @@ public class BrandService : IBrandService
     private readonly IRepository<Brand> _brandRepository;
     private readonly IWorkContext _workContext;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly AccessControlConfig _accessControlConfig;
 
     #endregion
@@ -102,7 +102,7 @@ public class BrandService : IBrandService
     public virtual Task<Brand> GetBrandById(string brandId)
     {
         var key = string.Format(CacheKey.BRANDS_BY_ID_KEY, brandId);
-        return _cacheBase.GetAsync(key, () => _brandRepository.GetByIdAsync(brandId));
+        return _cache.GetAsync(key, () => _brandRepository.GetByIdAsync(brandId));
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public class BrandService : IBrandService
         await _brandRepository.InsertAsync(brand);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.BRANDS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.BRANDS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(brand);
@@ -133,7 +133,7 @@ public class BrandService : IBrandService
         await _brandRepository.UpdateAsync(brand);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.BRANDS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.BRANDS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(brand);
@@ -147,7 +147,7 @@ public class BrandService : IBrandService
     {
         ArgumentNullException.ThrowIfNull(brand);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.BRANDS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.BRANDS_PATTERN_KEY);
 
         await _brandRepository.DeleteAsync(brand);
 

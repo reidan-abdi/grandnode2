@@ -44,7 +44,7 @@ public class PriceFormatterTests
         var eventPublisher = new Mock<IMediator>();
         _eventPublisher = eventPublisher.Object;
 
-        var cacheManager = new Mock<ICacheBase>();
+        var cacheManager = new Mock<ICache>();
         tempWorkContext = new Mock<IWorkContext>();
         {
             _workContext = tempWorkContext.Object;

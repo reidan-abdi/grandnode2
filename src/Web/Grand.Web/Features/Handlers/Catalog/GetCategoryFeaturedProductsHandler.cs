@@ -20,7 +20,7 @@ namespace Grand.Web.Features.Handlers.Catalog;
 
 public class GetCategoryFeaturedProductsHandler : IRequestHandler<GetCategoryFeaturedProducts, IList<CategoryModel>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CatalogSettings _catalogSettings;
     private readonly ICategoryService _categoryService;
     private readonly MediaSettings _mediaSettings;
@@ -30,7 +30,7 @@ public class GetCategoryFeaturedProductsHandler : IRequestHandler<GetCategoryFea
 
     public GetCategoryFeaturedProductsHandler(
         ICategoryService categoryService,
-        ICacheBase cacheBase,
+        ICache cache,
         IPictureService pictureService,
         ITranslationService translationService,
         IMediator mediator,
@@ -38,7 +38,7 @@ public class GetCategoryFeaturedProductsHandler : IRequestHandler<GetCategoryFea
         CatalogSettings catalogSettings)
     {
         _categoryService = categoryService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _pictureService = pictureService;
         _translationService = translationService;
         _mediator = mediator;
@@ -53,7 +53,7 @@ public class GetCategoryFeaturedProductsHandler : IRequestHandler<GetCategoryFea
             string.Join(",", request.Customer.GetCustomerGroupIds()), request.Store.Id,
             request.Language.Id);
 
-        var model = await _cacheBase.GetAsync(categoriesCacheKey, async () =>
+        var model = await _cache.GetAsync(categoriesCacheKey, async () =>
         {
             var catlistmodel = new List<CategoryModel>();
             foreach (var x in await _categoryService.GetAllCategoriesFeaturedProductsOnHomePage())
@@ -100,7 +100,7 @@ public class GetCategoryFeaturedProductsHandler : IRequestHandler<GetCategoryFea
             var cacheKey = string.Format(CacheKeyConst.CATEGORY_HAS_FEATURED_PRODUCTS_KEY, item.Id,
                 string.Join(",", request.Customer.GetCustomerGroupIds()), request.Store.Id);
 
-            var hasFeaturedProductsCache = await _cacheBase.GetAsync<bool?>(cacheKey, async () =>
+            var hasFeaturedProductsCache = await _cache.GetAsync<bool?>(cacheKey, async () =>
             {
                 featuredProducts = (await _mediator.Send(new GetSearchProductsQuery {
                     PageSize = _catalogSettings.LimitOfFeaturedProducts,

@@ -29,7 +29,7 @@ public class TaxController : BaseAdminController
         ITaxCategoryService taxCategoryService,
         ISettingService settingService,
         IServiceProvider serviceProvider,
-        ICacheBase cacheBase,
+        ICache cache,
         ITranslationService translationService,
         ICountryService countryService, 
         IEnumTranslationService enumTranslationService)
@@ -38,7 +38,7 @@ public class TaxController : BaseAdminController
         _taxCategoryService = taxCategoryService;
         _settingService = settingService;
         _serviceProvider = serviceProvider;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _translationService = translationService;
         _countryService = countryService;
         _enumTranslationService = enumTranslationService;
@@ -52,7 +52,7 @@ public class TaxController : BaseAdminController
     private readonly ITaxCategoryService _taxCategoryService;
     private readonly ISettingService _settingService;
     private readonly IServiceProvider _serviceProvider;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly ITranslationService _translationService;
     private readonly ICountryService _countryService;
     private readonly IEnumTranslationService _enumTranslationService;
@@ -63,7 +63,7 @@ public class TaxController : BaseAdminController
 
     protected async Task ClearCache()
     {
-        await _cacheBase.Clear();
+        await _cache.Clear();
     }
 
     public IActionResult Providers()

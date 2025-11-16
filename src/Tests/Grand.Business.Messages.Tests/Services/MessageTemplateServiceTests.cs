@@ -16,7 +16,7 @@ namespace Grand.Business.Messages.Tests.Services;
 public class MessageTemplateServiceTests
 {
     private Mock<IAclService> _aclService;
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<MessageTemplate>> _repositoryMock;
     private MessageTemplateService _service;
@@ -25,7 +25,7 @@ public class MessageTemplateServiceTests
     [TestInitialize]
     public void Init()
     {
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _aclService = new Mock<IAclService>();
         _repositoryMock = new Mock<IRepository<MessageTemplate>>();
         _mediatorMock = new Mock<IMediator>();

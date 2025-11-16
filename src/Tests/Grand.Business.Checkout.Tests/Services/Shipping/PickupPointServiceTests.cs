@@ -13,7 +13,7 @@ namespace Grand.Business.Checkout.Tests.Services.Shipping;
 [TestClass]
 public class PickupPointServiceTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private Mock<IMediator> _mediatorMock;
     private Mock<IRepository<PickupPoint>> _repositoryMock;
     private IPickupPointService _service;
@@ -23,7 +23,7 @@ public class PickupPointServiceTests
     {
         _repositoryMock = new Mock<IRepository<PickupPoint>>();
         _mediatorMock = new Mock<IMediator>();
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _service = new PickupPointService(_repositoryMock.Object, _mediatorMock.Object, _cacheMock.Object);
     }
 

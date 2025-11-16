@@ -17,7 +17,7 @@ namespace Grand.Business.Common.Tests.Services.ExportImport;
 [TestClass]
 public class CountryImportDataObjectTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private CountryImportDataObject _countryImportDataObject;
     private ICountryService _countryService;
     private Mock<IMediator> _mediatorMock;
@@ -30,10 +30,10 @@ public class CountryImportDataObjectTests
         _repository = new MongoDBRepositoryTest<Country>();
 
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
         var accessControlConfig = new AccessControlConfig();
-        _countryService = new CountryService(_repository, _mediatorMock.Object, _cacheBase, accessControlConfig);
+        _countryService = new CountryService(_repository, _mediatorMock.Object, _cache, accessControlConfig);
         _countryImportDataObject = new CountryImportDataObject(_countryService);
     }
 

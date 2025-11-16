@@ -14,14 +14,14 @@ public class GetBlogPostTagListHandler : IRequestHandler<GetBlogPostTagList, Blo
     private readonly IBlogService _blogService;
 
     private readonly BlogSettings _blogSettings;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IWorkContext _workContext;
 
-    public GetBlogPostTagListHandler(IBlogService blogService, ICacheBase cacheBase, IWorkContext workContext,
+    public GetBlogPostTagListHandler(IBlogService blogService, ICache cache, IWorkContext workContext,
         BlogSettings blogSettings)
     {
         _blogService = blogService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _workContext = workContext;
         _blogSettings = blogSettings;
     }
@@ -30,7 +30,7 @@ public class GetBlogPostTagListHandler : IRequestHandler<GetBlogPostTagList, Blo
     {
         var cacheKey = string.Format(CacheKeyConst.BLOG_TAGS_MODEL_KEY, _workContext.WorkingLanguage.Id,
             _workContext.CurrentStore.Id);
-        var cachedModel = await _cacheBase.GetAsync(cacheKey, async () =>
+        var cachedModel = await _cache.GetAsync(cacheKey, async () =>
         {
             var model = new BlogPostTagListModel();
 

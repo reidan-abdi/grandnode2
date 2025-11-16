@@ -24,20 +24,20 @@ public class CategoryService : ICategoryService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="categoryRepository">Category repository</param>
     /// <param name="workContext">Work context</param>
     /// <param name="mediator">Mediator</param>
     /// <param name="aclService">ACL service</param>
     /// <param name="accessControlConfig"></param>
-    public CategoryService(ICacheBase cacheBase,
+    public CategoryService(ICache cache,
         IRepository<Category> categoryRepository,
         IWorkContext workContext,
         IMediator mediator,
         IAclService aclService,
         AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _categoryRepository = categoryRepository;
         _workContext = workContext;
         _mediator = mediator;
@@ -52,7 +52,7 @@ public class CategoryService : ICategoryService
     private readonly IRepository<Category> _categoryRepository;
     private readonly IWorkContext _workContext;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IAclService _aclService;
     private readonly AccessControlConfig _accessControlConfig;
 
@@ -159,7 +159,7 @@ public class CategoryService : ICategoryService
         var customer = _workContext.CurrentCustomer;
         var key = string.Format(CacheKey.CATEGORIES_BY_PARENT_CATEGORY_ID_KEY, parentCategoryId, showHidden,
             customer.Id, storeId, includeAllLevels);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = _categoryRepository.Table.Where(c => c.ParentCategoryId == parentCategoryId);
             if (!showHidden)
@@ -390,7 +390,7 @@ public class CategoryService : ICategoryService
     public virtual async Task<Category> GetCategoryById(string categoryId)
     {
         var key = string.Format(CacheKey.CATEGORIES_BY_ID_KEY, categoryId);
-        return await _cacheBase.GetAsync(key, () => _categoryRepository.GetByIdAsync(categoryId));
+        return await _cache.GetAsync(key, () => _categoryRepository.GetByIdAsync(categoryId));
     }
 
     /// <summary>
@@ -404,8 +404,8 @@ public class CategoryService : ICategoryService
         await _categoryRepository.InsertAsync(category);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.CATEGORIES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(category);
@@ -437,8 +437,8 @@ public class CategoryService : ICategoryService
         await _categoryRepository.UpdateAsync(category);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.CATEGORIES_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(category);
@@ -463,7 +463,7 @@ public class CategoryService : ICategoryService
         await _categoryRepository.DeleteAsync(category);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.CATEGORIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CATEGORIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(category);

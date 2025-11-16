@@ -17,7 +17,7 @@ namespace Grand.Business.Cms.Tests.Services;
 [TestClass]
 public class KnowledgebaseServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
 
     private KnowledgebaseService _knowledgebaseService;
     private Mock<IMediator> _mediatorMock;
@@ -40,11 +40,11 @@ public class KnowledgebaseServiceTests
         _workContextMock.Setup(c => c.CurrentStore).Returns(() => new Store { Id = "", Name = "test store" });
         _workContextMock.Setup(c => c.CurrentCustomer).Returns(() => new Customer());
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
         _knowledgebaseService = new KnowledgebaseService(_repositoryKnowledgebaseCategory,
             _repositoryKnowledgebaseArticle, _repositoryKnowledgebaseArticleComment, _mediatorMock.Object,
-            _workContextMock.Object, _cacheBase, new AccessControlConfig());
+            _workContextMock.Object, _cache, new AccessControlConfig());
     }
 
     [TestMethod]

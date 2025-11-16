@@ -5,16 +5,17 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using MemoryCache = Grand.Infrastructure.Caching.MemoryCache;
 
 namespace Grand.Infrastructure.Tests.Caching;
 
 [TestClass]
-public class MemoryCacheBaseTests
+public class MemoryCacheTests
 {
     private CacheConfig _config;
     private Mock<IMediator> _mediatorMock;
     private IMemoryCache _memoryCache;
-    private MemoryCacheBase _service;
+    private MemoryCache _service;
 
     [TestInitialize]
     public void Init()
@@ -27,7 +28,7 @@ public class MemoryCacheBaseTests
 
         _memoryCache = serviceProvider.GetService<IMemoryCache>();
         _mediatorMock = new Mock<IMediator>();
-        _service = new MemoryCacheBase(_memoryCache, _mediatorMock.Object, _config);
+        _service = new MemoryCache(_memoryCache, _mediatorMock.Object, _config);
     }
 
     [TestMethod]

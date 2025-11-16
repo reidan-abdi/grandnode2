@@ -24,20 +24,20 @@ public class MerchandiseReturnService : IMerchandiseReturnService
     /// <param name="merchandiseReturnActionRepository">Merchandise return action repository</param>
     /// <param name="merchandiseReturnReasonRepository">Merchandise return reason repository</param>
     /// <param name="merchandiseReturnNoteRepository">Merchandise return note repository</param>
-    /// <param name="cacheBase">Cache</param>
+    /// <param name="cache">Cache</param>
     /// <param name="mediator">Mediator</param>
     public MerchandiseReturnService(IRepository<MerchandiseReturn> merchandiseReturnRepository,
         IRepository<MerchandiseReturnAction> merchandiseReturnActionRepository,
         IRepository<MerchandiseReturnReason> merchandiseReturnReasonRepository,
         IRepository<MerchandiseReturnNote> merchandiseReturnNoteRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _merchandiseReturnRepository = merchandiseReturnRepository;
         _merchandiseReturnActionRepository = merchandiseReturnActionRepository;
         _merchandiseReturnReasonRepository = merchandiseReturnReasonRepository;
         _merchandiseReturnNoteRepository = merchandiseReturnNoteRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -51,7 +51,7 @@ public class MerchandiseReturnService : IMerchandiseReturnService
     private readonly IRepository<MerchandiseReturnAction> _merchandiseReturnActionRepository;
     private readonly IRepository<MerchandiseReturnReason> _merchandiseReturnReasonRepository;
     private readonly IRepository<MerchandiseReturnNote> _merchandiseReturnNoteRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -120,7 +120,7 @@ public class MerchandiseReturnService : IMerchandiseReturnService
     /// <returns>Merchandise return actions</returns>
     public virtual async Task<IList<MerchandiseReturnAction>> GetAllMerchandiseReturnActions()
     {
-        return await _cacheBase.GetAsync(CacheKey.MERCHANDISE_RETURN_ACTIONS_ALL_KEY, async () =>
+        return await _cache.GetAsync(CacheKey.MERCHANDISE_RETURN_ACTIONS_ALL_KEY, async () =>
         {
             var query = from rra in _merchandiseReturnActionRepository.Table
                 orderby rra.DisplayOrder
@@ -203,7 +203,7 @@ public class MerchandiseReturnService : IMerchandiseReturnService
         await _mediator.EntityInserted(merchandiseReturnAction);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_ACTIONS_ALL_KEY);
+        await _cache.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_ACTIONS_ALL_KEY);
     }
 
     /// <summary>
@@ -220,7 +220,7 @@ public class MerchandiseReturnService : IMerchandiseReturnService
         await _mediator.EntityUpdated(merchandiseReturnAction);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_ACTIONS_ALL_KEY);
+        await _cache.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_ACTIONS_ALL_KEY);
     }
 
     /// <summary>
@@ -251,7 +251,7 @@ public class MerchandiseReturnService : IMerchandiseReturnService
         await _mediator.EntityDeleted(merchandiseReturnReason);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_REASONS_ALL_KEY);
+        await _cache.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_REASONS_ALL_KEY);
     }
 
     /// <summary>
@@ -260,7 +260,7 @@ public class MerchandiseReturnService : IMerchandiseReturnService
     /// <returns>Merchandise return reasons</returns>
     public virtual async Task<IList<MerchandiseReturnReason>> GetAllMerchandiseReturnReasons()
     {
-        return await _cacheBase.GetAsync(CacheKey.MERCHANDISE_RETURN_REASONS_ALL_KEY, async () =>
+        return await _cache.GetAsync(CacheKey.MERCHANDISE_RETURN_REASONS_ALL_KEY, async () =>
         {
             var query = from rra in _merchandiseReturnReasonRepository.Table
                 orderby rra.DisplayOrder
@@ -293,7 +293,7 @@ public class MerchandiseReturnService : IMerchandiseReturnService
         await _mediator.EntityInserted(merchandiseReturnReason);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_REASONS_ALL_KEY);
+        await _cache.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_REASONS_ALL_KEY);
     }
 
     /// <summary>
@@ -310,7 +310,7 @@ public class MerchandiseReturnService : IMerchandiseReturnService
         await _mediator.EntityUpdated(merchandiseReturnReason);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_REASONS_ALL_KEY);
+        await _cache.RemoveByPrefix(CacheKey.MERCHANDISE_RETURN_REASONS_ALL_KEY);
     }
 
     #region Merchandise return notes

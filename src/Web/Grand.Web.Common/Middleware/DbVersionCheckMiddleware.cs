@@ -18,12 +18,12 @@ public class DbVersionCheckMiddleware
 
     public async Task Invoke(
         HttpContext context,
-        ICacheBase cacheBase,
+        ICache cache,
         IRepository<GrandNodeVersion> repository)
     {
         if (context?.Request == null) return;
 
-        var version = cacheBase.Get(CacheKey.GRAND_NODE_VERSION, () => repository.Table.FirstOrDefault());
+        var version = cache.Get(CacheKey.GRAND_NODE_VERSION, () => repository.Table.FirstOrDefault());
         if (version == null)
         {
             await context.Response.WriteAsync("The database does not exist.");

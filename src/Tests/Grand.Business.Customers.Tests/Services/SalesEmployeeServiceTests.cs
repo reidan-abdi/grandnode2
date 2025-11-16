@@ -14,7 +14,7 @@ namespace Grand.Business.Customers.Tests.Services;
 [TestClass]
 public class SalesEmployeeServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private Mock<IMediator> _mediatorMock;
     private IRepository<SalesEmployee> _repository;
     private SalesEmployeeService _salesEmployeeService;
@@ -25,9 +25,9 @@ public class SalesEmployeeServiceTests
         _repository = new MongoDBRepositoryTest<SalesEmployee>();
         _mediatorMock = new Mock<IMediator>();
 
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
-        _salesEmployeeService = new SalesEmployeeService(_repository, _mediatorMock.Object, _cacheBase);
+        _salesEmployeeService = new SalesEmployeeService(_repository, _mediatorMock.Object, _cache);
     }
 
 

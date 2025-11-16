@@ -17,12 +17,12 @@ public class ProductCollectionService : IProductCollectionService
 {
     #region Ctor
 
-    public ProductCollectionService(ICacheBase cacheBase,
+    public ProductCollectionService(ICache cache,
         IRepository<Product> productRepository,
         IWorkContext workContext,
         IMediator mediator, AccessControlConfig accessControlConfig)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _productRepository = productRepository;
         _workContext = workContext;
         _mediator = mediator;
@@ -46,7 +46,7 @@ public class ProductCollectionService : IProductCollectionService
     {
         var key = string.Format(CacheKey.PRODUCTCOLLECTIONS_ALLBYCOLLECTIONID_KEY, showHidden, collectionId, pageIndex,
             pageSize, _workContext.CurrentCustomer.Id, storeId);
-        return await _cacheBase.GetAsync(key, () =>
+        return await _cache.GetAsync(key, () =>
         {
             var query = _productRepository.Table.Where(x =>
                 x.ProductCollections.Any(y => y.CollectionId == collectionId));
@@ -100,8 +100,8 @@ public class ProductCollectionService : IProductCollectionService
         await _productRepository.AddToSet(productId, x => x.ProductCollections, productCollection);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityInserted(productCollection);
@@ -120,8 +120,8 @@ public class ProductCollectionService : IProductCollectionService
             productCollection);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityUpdated(productCollection);
@@ -139,8 +139,8 @@ public class ProductCollectionService : IProductCollectionService
         await _productRepository.PullFilter(productId, x => x.ProductCollections, z => z.Id, productCollection.Id);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTCOLLECTIONS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
 
         //event notification
         await _mediator.EntityDeleted(productCollection);
@@ -151,7 +151,7 @@ public class ProductCollectionService : IProductCollectionService
     private readonly IRepository<Product> _productRepository;
     private readonly IWorkContext _workContext;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly AccessControlConfig _accessControlConfig;
 
     #endregion

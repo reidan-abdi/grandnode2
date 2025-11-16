@@ -11,20 +11,20 @@ namespace Grand.Web.Features.Handlers.Catalog;
 
 public class GetVendorNavigationHandler : IRequestHandler<GetVendorNavigation, VendorNavigationModel>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IVendorService _vendorService;
     private readonly VendorSettings _vendorSettings;
 
-    public GetVendorNavigationHandler(ICacheBase cacheBase, IVendorService vendorService, VendorSettings vendorSettings)
+    public GetVendorNavigationHandler(ICache cache, IVendorService vendorService, VendorSettings vendorSettings)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _vendorService = vendorService;
         _vendorSettings = vendorSettings;
     }
 
     public async Task<VendorNavigationModel> Handle(GetVendorNavigation request, CancellationToken cancellationToken)
     {
-        var cacheModel = await _cacheBase.GetAsync(CacheKeyConst.VENDOR_NAVIGATION_MODEL_KEY, async () =>
+        var cacheModel = await _cache.GetAsync(CacheKeyConst.VENDOR_NAVIGATION_MODEL_KEY, async () =>
         {
             var vendors = await _vendorService.GetAllVendors(pageSize: _vendorSettings.VendorsBlockItemsToDisplay);
             var model = new VendorNavigationModel {

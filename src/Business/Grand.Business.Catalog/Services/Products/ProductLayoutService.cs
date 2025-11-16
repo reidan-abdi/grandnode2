@@ -19,14 +19,14 @@ public class ProductLayoutService : IProductLayoutService
     ///     Ctor
     /// </summary>
     /// <param name="productLayoutRepository">Product layout repository</param>
-    /// <param name="cacheBase">Cache base</param>
+    /// <param name="cache">Cache base</param>
     /// <param name="mediator">Mediator</param>
     public ProductLayoutService(IRepository<ProductLayout> productLayoutRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _productLayoutRepository = productLayoutRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -35,7 +35,7 @@ public class ProductLayoutService : IProductLayoutService
     #region Fields
 
     private readonly IRepository<ProductLayout> _productLayoutRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -48,7 +48,7 @@ public class ProductLayoutService : IProductLayoutService
     /// <returns>Product layouts</returns>
     public virtual async Task<IList<ProductLayout>> GetAllProductLayouts()
     {
-        return await _cacheBase.GetAsync(CacheKey.PRODUCT_LAYOUT_ALL, async () =>
+        return await _cache.GetAsync(CacheKey.PRODUCT_LAYOUT_ALL, async () =>
         {
             var query = from pt in _productLayoutRepository.Table
                 orderby pt.DisplayOrder
@@ -65,7 +65,7 @@ public class ProductLayoutService : IProductLayoutService
     public virtual Task<ProductLayout> GetProductLayoutById(string productLayoutId)
     {
         var key = string.Format(CacheKey.PRODUCT_LAYOUT_BY_ID_KEY, productLayoutId);
-        return _cacheBase.GetAsync(key, () => _productLayoutRepository.GetByIdAsync(productLayoutId));
+        return _cache.GetAsync(key, () => _productLayoutRepository.GetByIdAsync(productLayoutId));
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public class ProductLayoutService : IProductLayoutService
         await _productLayoutRepository.InsertAsync(productLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCT_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCT_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(productLayout);
@@ -96,7 +96,7 @@ public class ProductLayoutService : IProductLayoutService
         await _productLayoutRepository.UpdateAsync(productLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCT_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCT_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(productLayout);
@@ -113,7 +113,7 @@ public class ProductLayoutService : IProductLayoutService
         await _productLayoutRepository.DeleteAsync(productLayout);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCT_LAYOUT_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCT_LAYOUT_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(productLayout);

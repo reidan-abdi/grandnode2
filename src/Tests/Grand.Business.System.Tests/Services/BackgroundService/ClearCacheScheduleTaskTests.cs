@@ -8,13 +8,13 @@ namespace Grand.Business.System.Tests.Services.BackgroundService;
 [TestClass]
 public class ClearCacheScheduleTaskTests
 {
-    private Mock<ICacheBase> _cacheMock;
+    private Mock<ICache> _cacheMock;
     private ClearCacheScheduleTask _task;
 
     [TestInitialize]
     public void Init()
     {
-        _cacheMock = new Mock<ICacheBase>();
+        _cacheMock = new Mock<ICache>();
         _task = new ClearCacheScheduleTask(_cacheMock.Object);
     }
 

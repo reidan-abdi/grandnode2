@@ -9,12 +9,12 @@ namespace Grand.Web.Features.Handlers.Catalog;
 
 public class GetChildCategoryIdsHandler : IRequestHandler<GetChildCategoryIds, IList<string>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly ICategoryService _categoryService;
 
-    public GetChildCategoryIdsHandler(ICacheBase cacheBase, ICategoryService categoryService)
+    public GetChildCategoryIdsHandler(ICache cache, ICategoryService categoryService)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _categoryService = categoryService;
     }
 
@@ -29,7 +29,7 @@ public class GetChildCategoryIdsHandler : IRequestHandler<GetChildCategoryIds, I
             request.ParentCategoryId,
             string.Join(",", request.Customer.GetCustomerGroupIds()),
             request.Store.Id);
-        return await _cacheBase.GetAsync(cacheKey, async () =>
+        return await _cache.GetAsync(cacheKey, async () =>
         {
             var categoriesIds = new List<string>();
             var categories = await _categoryService.GetAllCategoriesByParentCategoryId(request.ParentCategoryId);

@@ -19,7 +19,7 @@ namespace Grand.Business.Customers.Tests.Services;
 [TestClass]
 public class CustomerServiceTests
 {
-    private MemoryCacheBase _cacheBase;
+    private MemoryCache _cache;
     private CustomerService _customerService;
     private Mock<IMediator> _mediatorMock;
     private IRepository<Customer> _repository;
@@ -29,10 +29,10 @@ public class CustomerServiceTests
     {
         _repository = new MongoDBRepositoryTest<Customer>();
         _mediatorMock = new Mock<IMediator>();
-        _cacheBase = new MemoryCacheBase(MemoryCacheTest.Get(), _mediatorMock.Object,
+        _cache = new MemoryCache(MemoryCacheTest.Get(), _mediatorMock.Object,
             new CacheConfig { DefaultCacheTimeMinutes = 1 });
 
-        _customerService = new CustomerService(_repository, _mediatorMock.Object, _cacheBase);
+        _customerService = new CustomerService(_repository, _mediatorMock.Object, _cache);
     }
 
 
@@ -132,7 +132,7 @@ public class CustomerServiceTests
         var userName = "user";
         await _repository.InsertAsync(new Customer { Username = userName });
         //Act
-        var result = await _customerService.GetCustomerByUsername(userName);
+        var result = await _customerService.GetCustomerByName(userName);
         //Assert
         Assert.IsNotNull(result);
     }

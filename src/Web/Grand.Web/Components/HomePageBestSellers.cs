@@ -18,14 +18,14 @@ public class HomePageBestSellersViewComponent : BaseViewComponent
 
     public HomePageBestSellersViewComponent(
         IOrderReportService orderReportService,
-        ICacheBase cacheBase,
+        ICache cache,
         IWorkContext workContext,
         IProductService productService,
         IMediator mediator,
         CatalogSettings catalogSettings)
     {
         _orderReportService = orderReportService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _workContext = workContext;
         _productService = productService;
         _mediator = mediator;
@@ -49,7 +49,7 @@ public class HomePageBestSellersViewComponent : BaseViewComponent
             var fromdate = DateTime.UtcNow.AddMonths(_catalogSettings.PeriodBestsellers > 0
                 ? -_catalogSettings.PeriodBestsellers
                 : -12);
-            var report = await _cacheBase.GetAsync(
+            var report = await _cache.GetAsync(
                 string.Format(CacheKeyConst.HOMEPAGE_BESTSELLERS_IDS_KEY, _workContext.CurrentStore.Id), async () =>
                     await _orderReportService.BestSellersReport(
                         createdFromUtc: fromdate,
@@ -61,7 +61,7 @@ public class HomePageBestSellersViewComponent : BaseViewComponent
         }
         else
         {
-            productIds = await _cacheBase.GetAsync(CacheKeyConst.BESTSELLER_PRODUCTS_MODEL_KEY,
+            productIds = await _cache.GetAsync(CacheKeyConst.BESTSELLER_PRODUCTS_MODEL_KEY,
                 async () => (await _productService.GetAllProductsDisplayedOnBestSeller()).ToList());
         }
 
@@ -84,7 +84,7 @@ public class HomePageBestSellersViewComponent : BaseViewComponent
     #region Fields
 
     private readonly IOrderReportService _orderReportService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IWorkContext _workContext;
     private readonly IProductService _productService;
     private readonly IMediator _mediator;

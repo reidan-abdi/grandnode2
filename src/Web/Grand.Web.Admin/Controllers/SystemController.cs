@@ -263,11 +263,11 @@ public class SystemController : BaseAdminController
     }
 
 
-    public async Task<IActionResult> ClearCache(string returnUrl, [FromServices] ICacheBase cacheBase)
+    public async Task<IActionResult> ClearCache(string returnUrl, [FromServices] ICache cache)
     {
         _logger.LogInformation($"Clear cache has been done by the user: {_workContext.CurrentCustomer.Email}");
 
-        await cacheBase.Clear();
+        await cache.Clear();
 
         //home page
         if (string.IsNullOrEmpty(returnUrl))

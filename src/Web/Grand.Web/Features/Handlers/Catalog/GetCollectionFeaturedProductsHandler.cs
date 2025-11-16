@@ -21,7 +21,7 @@ namespace Grand.Web.Features.Handlers.Catalog;
 public class
     GetCollectionFeaturedProductsHandler : IRequestHandler<GetCollectionFeaturedProducts, IList<CollectionModel>>
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CatalogSettings _catalogSettings;
     private readonly ICollectionService _collectionService;
     private readonly MediaSettings _mediaSettings;
@@ -32,7 +32,7 @@ public class
     public GetCollectionFeaturedProductsHandler(
         IMediator mediator,
         ICollectionService collectionService,
-        ICacheBase cacheBase,
+        ICache cache,
         IPictureService pictureService,
         ITranslationService translationService,
         MediaSettings mediaSettings,
@@ -40,7 +40,7 @@ public class
     {
         _mediator = mediator;
         _collectionService = collectionService;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _pictureService = pictureService;
         _translationService = translationService;
         _mediaSettings = mediaSettings;
@@ -54,7 +54,7 @@ public class
             string.Join(",", request.Customer.GetCustomerGroupIds()), request.Store.Id,
             request.Language.Id);
 
-        var model = await _cacheBase.GetAsync(collectionCacheKey, async () =>
+        var model = await _cache.GetAsync(collectionCacheKey, async () =>
         {
             var collectionList = new List<CollectionModel>();
             var collectionmodel = await _collectionService.GetAllCollectionFeaturedProductsOnHomePage();
@@ -105,7 +105,7 @@ public class
                 string.Join(",", request.Customer.GetCustomerGroupIds()),
                 request.Store.Id);
 
-            var hasFeaturedProductsCache = await _cacheBase.GetAsync<bool?>(cacheKey, async () =>
+            var hasFeaturedProductsCache = await _cache.GetAsync<bool?>(cacheKey, async () =>
             {
                 featuredProducts = (await _mediator.Send(new GetSearchProductsQuery {
                     PageSize = _catalogSettings.LimitOfFeaturedProducts,

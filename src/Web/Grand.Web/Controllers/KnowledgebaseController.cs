@@ -24,7 +24,7 @@ namespace Grand.Web.Controllers;
 public class KnowledgebaseController : BasePublicController
 {
     private readonly IAclService _aclService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly CaptchaSettings _captchaSettings;
     private readonly CustomerSettings _customerSettings;
     private readonly IDateTimeService _dateTimeService;
@@ -40,7 +40,7 @@ public class KnowledgebaseController : BasePublicController
         KnowledgebaseSettings knowledgebaseSettings,
         IKnowledgebaseService knowledgebaseService,
         IWorkContext workContext,
-        ICacheBase cacheBase,
+        ICache cache,
         IAclService aclService,
         ITranslationService translationService,
         IMessageProviderService messageProviderService,
@@ -53,7 +53,7 @@ public class KnowledgebaseController : BasePublicController
         _knowledgebaseSettings = knowledgebaseSettings;
         _knowledgebaseService = knowledgebaseService;
         _workContext = workContext;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _aclService = aclService;
         _translationService = translationService;
         _captchaSettings = captchaSettings;
@@ -114,7 +114,7 @@ public class KnowledgebaseController : BasePublicController
         var breadcrumbCacheKey = string.Format(CacheKeyConst.KNOWLEDGEBASE_CATEGORY_BREADCRUMB_KEY, category.Id,
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()), _workContext.CurrentStore.Id,
             _workContext.WorkingLanguage.Id);
-        model.CategoryBreadcrumb = await _cacheBase.GetAsync(breadcrumbCacheKey, async () =>
+        model.CategoryBreadcrumb = await _cache.GetAsync(breadcrumbCacheKey, async () =>
             (await GetCategoryBreadCrumb(category))
             .Select(catBr => new KnowledgebaseCategoryModel {
                 Id = catBr.Id,
@@ -249,7 +249,7 @@ public class KnowledgebaseController : BasePublicController
                 string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
                 _workContext.CurrentStore.Id,
                 _workContext.WorkingLanguage.Id);
-            model.CategoryBreadcrumb = await _cacheBase.GetAsync(breadcrumbCacheKey, async () =>
+            model.CategoryBreadcrumb = await _cache.GetAsync(breadcrumbCacheKey, async () =>
                 (await GetCategoryBreadCrumb(category))
                 .Select(catBr => new KnowledgebaseCategoryModel {
                     Id = catBr.Id,

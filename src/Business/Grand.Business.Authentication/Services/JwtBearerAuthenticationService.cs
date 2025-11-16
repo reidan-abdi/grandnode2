@@ -12,8 +12,7 @@ public class JwtBearerAuthenticationService : IJwtBearerAuthenticationService
 
     private string _errorMessage;
 
-    public JwtBearerAuthenticationService(
-        ICustomerService customerService, IUserApiService userApiService)
+    public JwtBearerAuthenticationService(ICustomerService customerService, IUserApiService userApiService)
     {
         _customerService = customerService;
         _userApiService = userApiService;

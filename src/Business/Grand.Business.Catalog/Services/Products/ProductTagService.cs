@@ -20,16 +20,16 @@ public class ProductTagService : IProductTagService
     /// </summary>
     /// <param name="productTagRepository">Product tag repository</param>
     /// <param name="productRepository">Product repository</param>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="mediator">Mediator</param>
     public ProductTagService(IRepository<ProductTag> productTagRepository,
         IRepository<Product> productRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator
     )
     {
         _productTagRepository = productTagRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
         _productRepository = productRepository;
     }
@@ -44,7 +44,7 @@ public class ProductTagService : IProductTagService
     /// <returns>Dictionary of "product tag ID : product count"</returns>
     private async Task<Dictionary<string, int>> GetProductCount()
     {
-        return await _cacheBase.GetAsync(CacheKey.PRODUCTTAG_COUNT_KEY, async () =>
+        return await _cache.GetAsync(CacheKey.PRODUCTTAG_COUNT_KEY, async () =>
         {
             var query = from pt in _productTagRepository.Table
                 select pt;
@@ -60,7 +60,7 @@ public class ProductTagService : IProductTagService
 
     private readonly IRepository<ProductTag> _productTagRepository;
     private readonly IRepository<Product> _productRepository;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
 
     #endregion
@@ -73,7 +73,7 @@ public class ProductTagService : IProductTagService
     /// <returns>Product tags</returns>
     public virtual async Task<IList<ProductTag>> GetAllProductTags()
     {
-        return await _cacheBase.GetAsync(CacheKey.PRODUCTTAG_ALL_KEY,
+        return await _cache.GetAsync(CacheKey.PRODUCTTAG_ALL_KEY,
             async () => await Task.FromResult(_productTagRepository.Table.ToList()));
     }
 
@@ -118,7 +118,7 @@ public class ProductTagService : IProductTagService
         await _productTagRepository.InsertAsync(productTag);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(productTag);
@@ -140,7 +140,7 @@ public class ProductTagService : IProductTagService
         await _productRepository.UpdateToSet(x => x.ProductTags, previous.Name, productTag.Name);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(productTag);
@@ -161,8 +161,8 @@ public class ProductTagService : IProductTagService
         await _productTagRepository.DeleteAsync(productTag);
 
         //cache
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(productTag);
@@ -184,8 +184,8 @@ public class ProductTagService : IProductTagService
         await _productTagRepository.UpdateField(productTag.Id, x => x.Count, productTag.Count + 1);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(productTag);
@@ -206,8 +206,8 @@ public class ProductTagService : IProductTagService
         await _productTagRepository.UpdateField(productTag.Id, x => x.Count, productTag.Count - 1);
 
         //cache
-        await _cacheBase.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
-        await _cacheBase.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
+        await _cache.RemoveByPrefix(string.Format(CacheKey.PRODUCTS_BY_ID_KEY, productId));
+        await _cache.RemoveByPrefix(CacheKey.PRODUCTTAG_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(productTag);

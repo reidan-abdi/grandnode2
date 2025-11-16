@@ -20,18 +20,18 @@ public class CurrencyService : ICurrencyService
     /// <summary>
     ///     Ctor
     /// </summary>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     /// <param name="currencyRepository">Currency repository</param>
     /// <param name="aclService">ACL service</param>
     /// <param name="currencySettings">Currency settings</param>
     /// <param name="mediator">Mediator</param>
-    public CurrencyService(ICacheBase cacheBase,
+    public CurrencyService(ICache cache,
         IRepository<Currency> currencyRepository,
         IAclService aclService,
         CurrencySettings currencySettings,
         IMediator mediator)
     {
-        _cacheBase = cacheBase;
+        _cache = cache;
         _currencyRepository = currencyRepository;
         _aclService = aclService;
         _currencySettings = currencySettings;
@@ -44,7 +44,7 @@ public class CurrencyService : ICurrencyService
 
     private readonly IRepository<Currency> _currencyRepository;
     private readonly IAclService _aclService;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IMediator _mediator;
     private readonly CurrencySettings _currencySettings;
     private Currency _primaryCurrency;
@@ -62,7 +62,7 @@ public class CurrencyService : ICurrencyService
     public virtual Task<Currency> GetCurrencyById(string currencyId)
     {
         var key = string.Format(CacheKey.CURRENCIES_BY_ID_KEY, currencyId);
-        return _cacheBase.GetAsync(key, () => _currencyRepository.GetByIdAsync(currencyId));
+        return _cache.GetAsync(key, () => _currencyRepository.GetByIdAsync(currencyId));
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public class CurrencyService : ICurrencyService
             return null;
 
         var key = string.Format(CacheKey.CURRENCIES_BY_CODE, currencyCode);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var query = from q in _currencyRepository.Table
                 where q.CurrencyCode.ToLowerInvariant() == currencyCode.ToLowerInvariant()
@@ -112,7 +112,7 @@ public class CurrencyService : ICurrencyService
     public virtual async Task<IList<Currency>> GetAllCurrencies(bool showHidden = false, string storeId = "")
     {
         var key = string.Format(CacheKey.CURRENCIES_ALL_KEY, showHidden);
-        var currencies = await _cacheBase.GetAsync(key, async () =>
+        var currencies = await _cache.GetAsync(key, async () =>
         {
             var query = from p in _currencyRepository.Table
                 select p;
@@ -139,7 +139,7 @@ public class CurrencyService : ICurrencyService
 
         await _currencyRepository.InsertAsync(currency);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CURRENCIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CURRENCIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(currency);
@@ -155,7 +155,7 @@ public class CurrencyService : ICurrencyService
 
         await _currencyRepository.UpdateAsync(currency);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CURRENCIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CURRENCIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(currency);
@@ -171,7 +171,7 @@ public class CurrencyService : ICurrencyService
 
         await _currencyRepository.DeleteAsync(currency);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CURRENCIES_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CURRENCIES_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(currency);

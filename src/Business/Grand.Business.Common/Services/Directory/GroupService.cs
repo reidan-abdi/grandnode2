@@ -12,16 +12,16 @@ namespace Grand.Business.Common.Services.Directory;
 
 public class GroupService : IGroupService
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IRepository<CustomerGroup> _customerGroupRepository;
     private readonly IMediator _mediator;
 
     public GroupService(IRepository<CustomerGroup> customerGroupRepository,
-        ICacheBase cacheBase,
+        ICache cache,
         IMediator mediator)
     {
         _customerGroupRepository = customerGroupRepository;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _mediator = mediator;
     }
 
@@ -36,7 +36,7 @@ public class GroupService : IGroupService
             return Task.FromResult<CustomerGroup>(null);
 
         var key = string.Format(CacheKey.CUSTOMERGROUPS_BY_KEY, customerGroupId);
-        return _cacheBase.GetAsync(key, () => _customerGroupRepository.GetByIdAsync(customerGroupId));
+        return _cache.GetAsync(key, () => _customerGroupRepository.GetByIdAsync(customerGroupId));
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class GroupService : IGroupService
     public virtual async Task<CustomerGroup> GetCustomerGroupBySystemName(string systemName)
     {
         var key = string.Format(CacheKey.CUSTOMERGROUPS_BY_SYSTEMNAME_KEY, systemName);
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             return await Task.FromResult(
                 _customerGroupRepository.Table.FirstOrDefault(x => x.SystemName == systemName));
@@ -89,7 +89,7 @@ public class GroupService : IGroupService
 
         await _customerGroupRepository.InsertAsync(customerGroup);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERGROUPS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERGROUPS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityInserted(customerGroup);
@@ -105,7 +105,7 @@ public class GroupService : IGroupService
 
         await _customerGroupRepository.UpdateAsync(customerGroup);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERGROUPS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERGROUPS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityUpdated(customerGroup);
@@ -125,7 +125,7 @@ public class GroupService : IGroupService
         await _customerGroupRepository.DeleteAsync(customerGroup);
 
         //clear cache
-        await _cacheBase.RemoveByPrefix(CacheKey.CUSTOMERGROUPS_PATTERN_KEY);
+        await _cache.RemoveByPrefix(CacheKey.CUSTOMERGROUPS_PATTERN_KEY);
 
         //event notification
         await _mediator.EntityDeleted(customerGroup);
@@ -199,7 +199,7 @@ public class GroupService : IGroupService
 
     public async Task<IList<CustomerGroup>> GetAllByIds(string[] ids)
     {
-        var customerGroups = await _cacheBase.GetAsync(CacheKey.CUSTOMERGROUPS_ALL, async () =>
+        var customerGroups = await _cache.GetAsync(CacheKey.CUSTOMERGROUPS_ALL, async () =>
         {
             var query = from cr in _customerGroupRepository.Table
                 orderby cr.Name

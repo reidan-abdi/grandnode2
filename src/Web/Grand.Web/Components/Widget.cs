@@ -11,14 +11,14 @@ namespace Grand.Web.Components;
 
 public class WidgetViewComponent : BaseViewComponent
 {
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
     private readonly IWidgetService _widgetService;
     private readonly IWorkContext _workContext;
 
-    public WidgetViewComponent(IWorkContext workContext, ICacheBase cacheBase, IWidgetService widgetService)
+    public WidgetViewComponent(IWorkContext workContext, ICache cache, IWidgetService widgetService)
     {
         _workContext = workContext;
-        _cacheBase = cacheBase;
+        _cache = cache;
         _widgetService = widgetService;
     }
 
@@ -28,7 +28,7 @@ public class WidgetViewComponent : BaseViewComponent
             string.Join(",", _workContext.CurrentCustomer.GetCustomerGroupIds()),
             widgetZone);
 
-        var cachedModel = await _cacheBase.GetAsync(cacheKey, async () =>
+        var cachedModel = await _cache.GetAsync(cacheKey, async () =>
         {
             //model
             var model = new List<WidgetModel>();

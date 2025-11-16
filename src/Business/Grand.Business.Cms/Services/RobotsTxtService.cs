@@ -17,15 +17,15 @@ public class RobotsTxtService : IRobotsTxtService
     /// </summary>
     /// <param name="robotsRepository">Robots repository</param>
     /// <param name="mediator">Mediator</param>
-    /// <param name="cacheBase">Cache manager</param>
+    /// <param name="cache">Cache manager</param>
     public RobotsTxtService(
         IRepository<RobotsTxt> robotsRepository,
         IMediator mediator,
-        ICacheBase cacheBase)
+        ICache cache)
     {
         _robotsRepository = robotsRepository;
         _mediator = mediator;
-        _cacheBase = cacheBase;
+        _cache = cache;
     }
 
     #endregion
@@ -40,7 +40,7 @@ public class RobotsTxtService : IRobotsTxtService
     {
         var key = string.Format(CacheKey.ROBOTS_BY_STORE, storeId);
 
-        return await _cacheBase.GetAsync(key, async () =>
+        return await _cache.GetAsync(key, async () =>
         {
             var robotsTxt = await _robotsRepository.GetOneAsync(x => x.StoreId == storeId);
             return robotsTxt;
@@ -57,7 +57,7 @@ public class RobotsTxtService : IRobotsTxtService
 
         await _robotsRepository.InsertAsync(robotsTxt);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ROBOTS_ALL_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ROBOTS_ALL_KEY);
 
         //event notification
         await _mediator.EntityInserted(robotsTxt);
@@ -73,7 +73,7 @@ public class RobotsTxtService : IRobotsTxtService
 
         await _robotsRepository.UpdateAsync(robotsTxt);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ROBOTS_ALL_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ROBOTS_ALL_KEY);
 
         //event notification
         await _mediator.EntityUpdated(robotsTxt);
@@ -89,7 +89,7 @@ public class RobotsTxtService : IRobotsTxtService
 
         await _robotsRepository.DeleteAsync(robotsTxt);
 
-        await _cacheBase.RemoveByPrefix(CacheKey.ROBOTS_ALL_KEY);
+        await _cache.RemoveByPrefix(CacheKey.ROBOTS_ALL_KEY);
 
         //event notification
         await _mediator.EntityDeleted(robotsTxt);
@@ -99,7 +99,7 @@ public class RobotsTxtService : IRobotsTxtService
 
     private readonly IRepository<RobotsTxt> _robotsRepository;
     private readonly IMediator _mediator;
-    private readonly ICacheBase _cacheBase;
+    private readonly ICache _cache;
 
     #endregion
 }
